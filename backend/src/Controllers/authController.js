@@ -6,7 +6,7 @@ const { sendEmail } = require("../Utils/sendEmail");
 
 // Generate JWT Token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id }, "abueburb#245", {
     expiresIn: process.env.JWT_EXPIRE || "7d",
   });
 };
@@ -98,7 +98,7 @@ exports.login = async (req, res, next) => {
     }
 
     const { email, password } = req.body;
-
+    console.log(req.body);
     const user = await User.findByEmail(email).select("+password");
     if (!user) {
       return res.status(401).json({

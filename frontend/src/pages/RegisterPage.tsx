@@ -70,56 +70,36 @@ const RegisterPage: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
   
- const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
   
-  // console.log(formData);
-  e.preventDefault();
-  try {
-    const res = await registerUser(formData); // your API call
-
-    if (res.status === "success") {
-      navigate('/login'); // client-side redirect
-    }
-  } catch (err) {
-    console.error(err);
-  }
-  if (validateForm()) {
+    if (!validateForm()) return;
+  
     setIsLoading(true);
     setErrors({});
-
+  
     try {
-      // Only send necessary fields
-      await registerUser({
+      const res = await registerUser({
         name: formData.name,
         email: formData.email,
         password: formData.password,
         address: formData.address,
-        agreeTerms:formData.agreeTerms,
+        agreeTerms: formData.agreeTerms,
       });
-   
-      // Show success message or redirect as needed
-      // For example: navigate('/login');
-    } catch (error:any)
-    {
-      // Handle error from backend
-      setErrors({ form: error.message });
+  
+      if (res.status === "success") {
+        navigate('/login'); // Redirect on success
+      } else {
+        setErrors({ form: "Registration failed. Please try again." });
+      }
+    } catch (error: any) {
+      setErrors({ form: error.message || "Something went wrong." });
+      console.error(error);
     } finally {
       setIsLoading(false);
     }
-    try {
-      const res = await registerUser(formData); // your API call
+  };
   
-      if (res.status === "success") {
-        navigate('/login'); // client-side redirect
-      }
-    } catch (err) {
-      console.error(err);
-    }
-
-
-
-  }
-};
 
   
   const togglePasswordVisibility = () => {
