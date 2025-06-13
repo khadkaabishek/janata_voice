@@ -11,7 +11,7 @@ const userRoutes = require("./src/Routes/userRoutes");
 const { errorHandler } = require("./src/Middlewares/errorHandler");
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Connect to MongoDB
 connectDB();

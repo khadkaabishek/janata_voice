@@ -77,7 +77,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Index for email lookup
-userSchema.index({ email: 1 });
+// userSchema.index({ email: 1 });
 
 // Virtual for user's full profile
 userSchema.virtual('profile').get(function() {
