@@ -86,7 +86,7 @@ const NotificationDropdown: React.FC = () => {
           <div className="fixed inset-0 z-40 lg:hidden" onClick={() => setIsOpen(false)} />
           
           {/* Dropdown */}
-          <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-w-[calc(100vw-2rem)] lg:max-w-none">
+<div className="fixed top-16 left-0 w-60 bg-white shadow-lg rounded-md overflow-hidden z-50">
             <div className="px-4 py-3 border-b border-gray-200">
               <h3 className="text-lg font-medium text-gray-900">Notifications</h3>
             </div>

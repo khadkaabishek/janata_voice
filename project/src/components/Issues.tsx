@@ -165,6 +165,7 @@ const Issues: React.FC = () => {
             <div className="flex items-center space-x-2">
               <Filter className="h-5 w-5 text-gray-400" />
               <select
+                aria-label="Filter by status"
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -251,7 +252,11 @@ const Issues: React.FC = () => {
                         View
                       </button>
                       <div className="relative group">
-                        <button className="text-gray-400 hover:text-gray-600">
+                        <button
+                          className="text-gray-400 hover:text-gray-600"
+                          aria-label="More actions"
+                          title="More actions"
+                        >
                           <MoreHorizontal className="h-4 w-4" />
                         </button>
                       </div>

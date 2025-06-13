@@ -79,6 +79,7 @@ const Settings: React.FC = () => {
               type="text"
               value={settings.name}
               onChange={(e) => handleSettingChange('name', e.target.value)}
+              placeholder="Enter full name"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -92,6 +93,8 @@ const Settings: React.FC = () => {
                 type="email"
                 value={settings.email}
                 onChange={(e) => handleSettingChange('email', e.target.value)}
+                placeholder="Enter email address"
+                title="Email Address"
                 className="w-full pl-10 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -106,6 +109,7 @@ const Settings: React.FC = () => {
                 type="tel"
                 value={settings.phone}
                 onChange={(e) => handleSettingChange('phone', e.target.value)}
+                placeholder="Enter phone number"
                 className="w-full pl-10 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -118,6 +122,8 @@ const Settings: React.FC = () => {
               type="text"
               value={settings.office}
               onChange={(e) => handleSettingChange('office', e.target.value)}
+              placeholder="Enter office name"
+              title="Office"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -131,6 +137,8 @@ const Settings: React.FC = () => {
                 value={settings.address}
                 onChange={(e) => handleSettingChange('address', e.target.value)}
                 rows={3}
+                placeholder="Enter address"
+                title="Address"
                 className="w-full pl-10 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               />
             </div>
@@ -150,9 +158,11 @@ const Settings: React.FC = () => {
                 type={showPassword ? 'text' : 'password'}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Enter current password"
+                title="Enter current password"
               />
               <button
                 type="button"
+                title={showPassword ? "Hide password" : "Show password"}
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
@@ -168,6 +178,7 @@ const Settings: React.FC = () => {
               type="password"
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Enter new password"
+              title="Enter new password"
             />
           </div>
         </div>
@@ -193,6 +204,7 @@ const Settings: React.FC = () => {
                 <p className="text-sm text-gray-500">{item.description}</p>
               </div>
               <button
+                title={settings[item.key as keyof typeof settings] ? `Disable ${item.label}` : `Enable ${item.label}`}
                 onClick={() => handleSettingChange(item.key, !settings[item.key as keyof typeof settings])}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                   settings[item.key as keyof typeof settings] ? 'bg-blue-600' : 'bg-gray-200'
@@ -222,6 +234,7 @@ const Settings: React.FC = () => {
               <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
             </div>
             <button
+              title={settings.twoFactorAuth ? "Disable two-factor authentication" : "Enable two-factor authentication"}
               onClick={() => handleSettingChange('twoFactorAuth', !settings.twoFactorAuth)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 settings.twoFactorAuth ? 'bg-blue-600' : 'bg-gray-200'
@@ -244,6 +257,7 @@ const Settings: React.FC = () => {
               value={settings.sessionTimeout}
               onChange={(e) => handleSettingChange('sessionTimeout', parseInt(e.target.value))}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-label="Session Timeout"
             >
               <option value={15}>15 minutes</option>
               <option value={30}>30 minutes</option>
@@ -263,10 +277,12 @@ const Settings: React.FC = () => {
         <h3 className="text-lg font-medium text-gray-900 mb-4">System Preferences</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="settings-language" className="block text-sm font-medium text-gray-700 mb-2">
               Language
             </label>
             <select
+              id="settings-language"
+              aria-label="Language"
               value={settings.language}
               onChange={(e) => handleSettingChange('language', e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -284,6 +300,8 @@ const Settings: React.FC = () => {
               value={settings.timezone}
               onChange={(e) => handleSettingChange('timezone', e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-label="Timezone"
+              title="Timezone"
             >
               <option value="Asia/Kathmandu">Asia/Kathmandu (NPT)</option>
               <option value="UTC">UTC</option>
@@ -297,6 +315,8 @@ const Settings: React.FC = () => {
               value={settings.dateFormat}
               onChange={(e) => handleSettingChange('dateFormat', e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-label="Date Format"
+              title="Date Format"
             >
               <option value="YYYY-MM-DD">YYYY-MM-DD</option>
               <option value="DD-MM-YYYY">DD-MM-YYYY</option>
@@ -322,6 +342,8 @@ const Settings: React.FC = () => {
               value={settings.dataRetention}
               onChange={(e) => handleSettingChange('dataRetention', parseInt(e.target.value))}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-label="Data Retention Period"
+              title="Data Retention Period"
             >
               <option value={90}>3 months</option>
               <option value={180}>6 months</option>
@@ -337,6 +359,7 @@ const Settings: React.FC = () => {
               <p className="text-sm text-gray-500">Automatically backup system data</p>
             </div>
             <button
+              title={settings.autoBackup ? "Disable automatic backup" : "Enable automatic backup"}
               onClick={() => handleSettingChange('autoBackup', !settings.autoBackup)}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                 settings.autoBackup ? 'bg-blue-600' : 'bg-gray-200'
@@ -359,6 +382,7 @@ const Settings: React.FC = () => {
                 value={settings.backupFrequency}
                 onChange={(e) => handleSettingChange('backupFrequency', e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                aria-label="Backup Frequency"
               >
                 <option value="daily">Daily</option>
                 <option value="weekly">Weekly</option>
@@ -408,6 +432,7 @@ const Settings: React.FC = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
+                    title={tab.label}
                     className={`w-full flex items-center px-3 py-2 text-left rounded-lg transition-colors ${
                       isActive
                         ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-700'

@@ -42,6 +42,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+            title="Open sidebar menu"
+            aria-label="Open sidebar menu"
           >
             <Menu className="h-6 w-6" />
           </button>
@@ -59,6 +61,8 @@ const Sidebar: React.FC<SidebarProps> = ({
               <button
                 onClick={() => setSidebarOpen(false)}
                 className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+                title="Close sidebar menu"
+                aria-label="Close sidebar menu"
               >
                 <X className="h-6 w-6 text-white" />
               </button>
@@ -115,10 +119,11 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           <h1 className="text-xl font-bold text-gray-900">Janata Voice</h1>
         </div>
         {isDesktop && (
-          <div className="relative z-50">
-            <NotificationDropdown />
-          </div>
-        )}
+  <div className="relative z-50 flex items-center justify-end ml-auto pr-2">
+    <NotificationDropdown />
+  </div>
+)}
+
       </div>
 
       {/* Navigation */}
@@ -130,6 +135,7 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           return (
             <button
               key={item.id}
+              title={item.label}
               onClick={() => {
                 setActiveTab(item.id);
                 setSidebarOpen(false);
