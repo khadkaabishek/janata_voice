@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { UserPlus, Mail, Lock, Eye, EyeOff, User, MapPin } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card, { CardContent, CardHeader, CardFooter } from '../components/ui/Card';
-import { useLanguage } from '../contexts/LanguageContext';
+import { registerUser } from '../api';
+import { useNavigate } from 'react-router-dom';
 
-const RegisterPage = () => { 
-  const { translations } = useLanguage(); // Translation hook
+
+const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -36,7 +38,79 @@ const RegisterPage = () => {
       ...prev,
       [name]: value
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
+  
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    if (!formData.address.trim()) {
+      newErrors.address = 'Address is required';
+    }
+    
+    if (!formData.agreeTerms) {
+      newErrors.agreeTerms = 'You must agree to the terms and conditions';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    if (!validateForm()) return;
+  
+    setIsLoading(true);
+    setErrors({});
+  
+    try {
+      const res = await registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        address: formData.address,
+        agreeTerms: formData.agreeTerms,
+      });
+  
+      if (res.status === "success") {
+        navigate('/login'); // Redirect on success
+      } else {
+        setErrors({ form: "Registration failed. Please try again." });
+      }
+    } catch (error: any) {
+      setErrors({ form: error.message || "Something went wrong." });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+
   
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
