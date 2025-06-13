@@ -32,6 +32,8 @@ const createInteraction = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+
+// Fetching interactions related to a specific issue
 const fetchInteractions = async (req, res) => {
     try {
         const issueId = req.params.issueId; // Assuming issue ID is passed as a URL parameter
@@ -56,5 +58,6 @@ const fetchInteractions = async (req, res) => {
 }
 module.exports = {
     createInteraction,
+    fetchInteractions
 };
 

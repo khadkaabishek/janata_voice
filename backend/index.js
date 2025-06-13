@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const issueRoute = require("./src/routs/issueRoute.js");
-const interactionRoute = require("./src/routs/interactionRoute.js");
+// const interactionRoute = require("./src/routs/interactionRoute.js");
 const { connectDB } = require("./connection.js");
 require("dotenv").config();
 
@@ -19,11 +19,11 @@ connectDB(`${process.env.Mongo_URL}`)
 
 // Middlewares
 app.use(cors());
-app.use(express.json()); // Don't forget this if you're accepting JSON requests
+app.use(express.json()); 
 
 // Routes
 app.use("/issue", issueRoute);
-app.use("/interaction", interactionRoute);
+// app.use("/interaction", interactionRoute);
 
 // Server
 app.listen(PORT, () => {

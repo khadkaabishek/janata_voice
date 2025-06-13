@@ -8,7 +8,7 @@ const interactionSchema = new mongoose.Schema({
   },
   voteBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    // ref: "User"
   },
   issue: {
     type: mongoose.Schema.Types.ObjectId,
@@ -21,7 +21,7 @@ const interactionSchema = new mongoose.Schema({
   },
   commentBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    // ref: "User"
   },
   // replies
   reply: {
@@ -29,7 +29,7 @@ const interactionSchema = new mongoose.Schema({
   },
   replyBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    // ref: "User"
   },
   commentId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -38,7 +38,7 @@ const interactionSchema = new mongoose.Schema({
   // follow
   follow: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
+    // ref: "User"
   }
 }, { timestamps: true });
 
