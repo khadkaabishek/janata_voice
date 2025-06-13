@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
-const issueRoute = require("./src/routs/issueRoute.js");
-// const interactionRoute = require("./src/routs/interactionRoute.js");
+const issueRoute = require("./src/Routes/issueRoute.js");
+const interactionRoute = require("./src/Routes/interactionRoute.js");
 const { connectDB } = require("./connection.js");
 require("dotenv").config();
 
@@ -23,8 +23,8 @@ app.use(express.json());
 
 // Routes
 app.use("/issue", issueRoute);
-// app.use("/interaction", interactionRoute);
-
+app.use("/interaction", interactionRoute);
+app.use("")
 // Server
 app.listen(PORT, () => {
   console.log(`Server Started : ${PORT}`);

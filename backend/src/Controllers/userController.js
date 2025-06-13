@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const User = require('../Models/User');
+const User = require('../Modelsuser');
 
 // @desc    Get user profile
 // @route   GET /api/users/profile
