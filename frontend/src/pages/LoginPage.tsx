@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { LogIn, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Button from '../components/ui/Button';
@@ -12,6 +12,7 @@ const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   
   const handleSubmit = (e: React.FormEvent) => {
+    
     e.preventDefault();
     setIsLoading(true);
     
@@ -31,19 +32,6 @@ const LoginPage: React.FC = () => {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <Link to="/" className="flex items-center justify-center mb-6">
-            {/* <svg
-              viewBox="0 0 24 24"
-              className="w-8 h-8 text-primary-500"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="16" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-            </svg> */}
             <img 
   src="../janatavoice.jpg" 
   alt="JanataVoice Logo" 

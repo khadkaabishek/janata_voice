@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { validationResult } = require("express-validator");
-const User = require("../Models/User");
+const User = require("../models/User");
 const { sendEmail } = require("../Utils/sendEmail");
 
 // Generate JWT Token
@@ -40,7 +40,7 @@ const sendTokenResponse = (user, statusCode, res, message = "Success") => {
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
-exports.register = async (req, res, next) => {
+exports.register = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -52,7 +52,7 @@ exports.register = async (req, res, next) => {
     }
 
     const { name, email, password, address, agreeTerms } = req.body;
-    console.log(`Name = ${name} ,Email : ${email}`);
+    console.log(req.body);
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
       return res.status(400).json({
@@ -69,40 +69,11 @@ exports.register = async (req, res, next) => {
       agreeTerms,
     });
 
-    const verificationToken = user.generateVerificationToken();
     await user.save({ validateBeforeSave: false });
-
-    // FIXED: Added encodeURIComponent() for the token
-    const verificationUrl = `${req.protocol}://${req.get("host")}/api/auth/verify/${encodeURIComponent(verificationToken)}`;
-
-    const emailText = `Welcome to Janata Voice!\n\nPlease verify your email: ${verificationUrl}`;
-
-    try {
-      await sendEmail({
-        email: user.email,
-        subject: "Verify Your Janata Voice Account",
-        text: emailText,
-      });
-
-      res.status(201).json({
-        status: "success",
-        message:
-          "User registered successfully. Please check your email to verify your account.",
-        data: {
-          user: user.profile,
-        },
-      });
-    } catch (emailError) {
-      console.error("Email sending failed:", emailError);
-      res.status(201).json({
-        status: "success",
-        message:
-          "User registered successfully. Verification email could not be sent.",
-        data: {
-          user: user.profile,
-        },
-      });
-    }
+    return res.status(201).json({
+      status: "success",
+      message: "User registered successfully",
+    });
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({

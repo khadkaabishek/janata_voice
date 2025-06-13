@@ -4,9 +4,11 @@ import { UserPlus, Mail, Lock, User, MapPin, Eye, EyeOff,  AlertCircle } from 'l
 import Button from '../components/ui/Button';
 import Card, { CardContent, CardHeader, CardFooter } from '../components/ui/Card';
 import { registerUser } from '../api';
+import { useNavigate } from 'react-router-dom';
 
 
 const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -69,8 +71,18 @@ const RegisterPage: React.FC = () => {
   };
   
  const handleSubmit = async (e: React.FormEvent) => {
+  
+  // console.log(formData);
   e.preventDefault();
+  try {
+    const res = await registerUser(formData); // your API call
 
+    if (res.status === "success") {
+      navigate('/login'); // client-side redirect
+    }
+  } catch (err) {
+    console.error(err);
+  }
   if (validateForm()) {
     setIsLoading(true);
     setErrors({});
@@ -82,7 +94,9 @@ const RegisterPage: React.FC = () => {
         email: formData.email,
         password: formData.password,
         address: formData.address,
+        agreeTerms:formData.agreeTerms,
       });
+   
       // Show success message or redirect as needed
       // For example: navigate('/login');
     } catch (error:any)
@@ -92,6 +106,18 @@ const RegisterPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
+    try {
+      const res = await registerUser(formData); // your API call
+  
+      if (res.status === "success") {
+        navigate('/login'); // client-side redirect
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+
+
   }
 };
 
