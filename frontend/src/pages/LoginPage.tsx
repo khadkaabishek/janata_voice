@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { LogIn, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card, { CardContent, CardHeader, CardFooter } from '../components/ui/Card';
+import { useLanguage } from '../contexts/LanguageContext'; // Added this import
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => { // Removed React.FC
+  const { translations } = useLanguage(); // Added translation hook
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -31,42 +33,35 @@ const LoginPage: React.FC = () => {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <Link to="/" className="flex items-center justify-center mb-6">
-            {/* <svg
-              viewBox="0 0 24 24"
-              className="w-8 h-8 text-primary-500"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="16" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-            </svg> */}
             <img 
-  src="../janatavoice.jpg" 
-  alt="JanataVoice Logo" 
-  className="h-8 w-12 object-contain" 
-/>
-            <span className="ml-2 text-2xl font-display font-bold text-primary-800">Janata Voice</span>
+              src="../janatavoice.jpg" 
+              alt="JanataVoice Logo" 
+              className="h-8 w-12 object-contain" 
+            />
+            <span className="ml-2 text-2xl font-display font-bold text-primary-800">
+              {translations['app.title']} {/* Changed to use translation */}
+            </span>
           </Link>
-          <h2 className="text-3xl font-bold text-gray-900">Sign in to your account</h2>
+          <h2 className="text-3xl font-bold text-gray-900">
+            {translations['auth.login.title']} {/* Changed to use translation */}
+          </h2>
           <p className="mt-2 text-gray-600">
-            Access your dashboard to report and track issues in your community
+            {translations['auth.login.subtitle']} {/* Changed to use translation */}
           </p>
         </div>
         
         <Card>
           <CardHeader>
-            <h3 className="text-xl font-semibold text-primary-700">Login</h3>
+            <h3 className="text-xl font-semibold text-primary-700">
+              {translations['nav.login']} {/* Changed to use translation */}
+            </h3>
           </CardHeader>
           
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-6">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  Email Address
+                  {translations['form.email']} {/* Changed to use translation */}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -81,14 +76,14 @@ const LoginPage: React.FC = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="your.email@example.com"
+                    placeholder={translations['form.emailPlaceholder']}
                   />
                 </div>
               </div>
               
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Password
+                  {translations['form.password']}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -103,13 +98,14 @@ const LoginPage: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="••••••••"
+                    placeholder={translations['form.passwordPlaceholder']}
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
                       className="text-gray-400 hover:text-gray-500 focus:outline-none"
+                      title={showPassword ? translations['button.hidePassword'] : translations['button.showPassword']}
                     >
                       {showPassword ? (
                         <EyeOff size={18} />
@@ -132,13 +128,13 @@ const LoginPage: React.FC = () => {
                     className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                   />
                   <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                    Remember me
+                    {translations['auth.rememberMe']} {/* Changed to use translation */}
                   </label>
                 </div>
                 
                 <div className="text-sm">
                   <Link to="/forgot-password" className="text-primary-600 hover:text-primary-500">
-                    Forgot your password?
+                    {translations['auth.forgotPassword']} {/* Changed to use translation */}
                   </Link>
                 </div>
               </div>
@@ -153,13 +149,13 @@ const LoginPage: React.FC = () => {
                 disabled={isLoading}
                 icon={<LogIn size={16} />}
               >
-                Sign in
+                {translations['button.signIn']} {/* Changed to use translation */}
               </Button>
               
               <div className="text-center text-sm text-gray-600">
-                Don't have an account?{' '}
+                {translations['auth.dontHaveAccount']}{' '} {/* Changed to use translation */}
                 <Link to="/register" className="text-primary-600 hover:text-primary-500 font-medium">
-                  Register now
+                  {translations['button.registerNow']} {/* Changed to use translation */}
                 </Link>
               </div>
             </CardFooter>
