@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { LogIn, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card, { CardContent, CardHeader, CardFooter } from '../components/ui/Card';
@@ -12,16 +12,44 @@ const LoginPage = () => { // Removed React.FC
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // Prevent page reload
+    setIsLoading(true); // Show loading state
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // In a real app, you would handle authentication and redirect
-    }, 1500);
+    // Prepare JSON payload from form data
+    const loginData = {
+      email: email.trim(),
+      password: password,
+    };
+    console.log(loginData);
+  
+    try {
+      const response = await fetch('http://localhost:5001/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginData), // Convert JS object to JSON
+      });
+  
+      const data = await response.json(); // Convert response to JS object
+  
+      if (!response.ok) {
+        // Backend validation failed
+        throw new Error(data.message || 'Login failed. Please try again.');
+      }
+  
+      // ✅ Success - store token and redirect
+      localStorage.setItem('token', data.token); // Save token (optional)
+      navigate('/dashboard'); // Redirect after login
+  
+    } catch (err: any) {
+      // ❌ Show error to user
+      alert(err.message);
+    } finally {
+      setIsLoading(false); // Stop loading spinner
+    }
   };
   
   const togglePasswordVisibility = () => {
