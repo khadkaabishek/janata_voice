@@ -6,8 +6,10 @@ import IssueFilter, { FilterState } from '../components/issues/IssueFilter';
 import Button from '../components/ui/Button';
 import { MOCK_ISSUES } from '../data/mockData';
 import { Issue } from '../types';
+import { useLanguage } from '../contexts/LanguageContext'; // Added this import
 
-const IssuesPage: React.FC = () => {
+const IssuesPage = () => { // Removed React.FC
+  const { translations } = useLanguage(); // Added translation hook
   const [searchParams] = useSearchParams();
   const [filteredIssues, setFilteredIssues] = useState<Issue[]>(MOCK_ISSUES);
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'map'>(() => {
@@ -121,10 +123,11 @@ const IssuesPage: React.FC = () => {
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="bg-white/90 p-6 rounded-lg shadow-lg text-center max-w-md">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Kathmandu Metropolitan City</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  {translations['app.subtitle']} {/* Changed to use translation */}
+                </h3>
                 <p className="text-gray-600">
-                  Interactive map showing issue locations would be displayed here.
-                  Each marker would represent an issue, colored by status.
+                  {translations['issues.mapView.description']} {/* Changed to use translation */}
                 </p>
               </div>
             </div>
@@ -152,8 +155,12 @@ const IssuesPage: React.FC = () => {
     if (filteredIssues.length === 0) {
       return (
         <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No issues found</h3>
-          <p className="text-gray-600">Try adjusting your filters or search criteria.</p>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            {translations['issues.noIssuesFound']} {/* Changed to use translation */}
+          </h3>
+          <p className="text-gray-600">
+            {translations['issues.tryAdjustingFilters']} {/* Changed to use translation */}
+          </p>
         </div>
       );
     }
@@ -175,7 +182,9 @@ const IssuesPage: React.FC = () => {
     <div className="py-6 px-2 md:px-6">
       <div className="mb-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-primary-800">Issues Dashboard</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-primary-800">
+            {translations['issues.dashboard']} {/* Changed to use translation */}
+          </h1>
           
           <div className="flex items-center space-x-2">
             <Button
@@ -184,7 +193,7 @@ const IssuesPage: React.FC = () => {
               onClick={toggleFilterVisibility}
               icon={<ListFilter size={16} />}
             >
-              {isFilterVisible ? 'Hide Filters' : 'Show Filters'}
+              {isFilterVisible ? translations['button.hideFilters'] : translations['button.showFilters']} {/* Changed to use translation */}
             </Button>
             
             <Button
@@ -193,7 +202,9 @@ const IssuesPage: React.FC = () => {
               onClick={toggleViewMode}
               icon={viewMode === 'map' ? <Layout size={16} /> : <MapIcon size={16} />}
             >
-              {viewMode === 'grid' ? 'List View' : viewMode === 'list' ? 'Map View' : 'Grid View'}
+              {viewMode === 'grid' ? translations['button.listView'] : 
+               viewMode === 'list' ? translations['button.mapView'] : 
+               translations['button.gridView']} {/* Changed to use translation */}
             </Button>
           </div>
         </div>
