@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true,
+    "strict": true
+  },
+  // "files": [], // Removed to allow TypeScript to include all files by default
+  "references": [
+  ]
+}
+

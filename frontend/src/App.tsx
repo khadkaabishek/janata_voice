@@ -22,9 +22,9 @@ import LoadingSpinner from './components/ui/LoadingSpinner';
 
 function App() {
   return (
-    
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
+        {/* Main layout routes */}
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
           <Route path="about" element={<AboutPage />} />
@@ -32,14 +32,16 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
         </Route>
-        
-        <Route path="dashboard" element={<DashboardLayout />}>
+
+        {/* Dashboard layout routes */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
           <Route path="issues" element={<IssuesPage />} />
           <Route path="report" element={<ReportIssuePage />} />
           <Route path="discussion" element={<DiscussionPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
         </Route>
-        
+
+        {/* Catch-all for 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
