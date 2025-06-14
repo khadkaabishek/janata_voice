@@ -8,6 +8,8 @@ require("dotenv").config();
 const connectDB = require("./src/Utils/database");
 const authRoutes = require("./src/Routes/authRoutes");
 const userRoutes = require("./src/Routes/userRoutes");
+const issueRoute = require("./src/Routes/issueRoute.js");
+const interactionRoute = require("./src/Routes/interactionRoute.js");
 const { errorHandler } = require("./src/Middlewares/errorHandler");
 
 const app = express();
@@ -31,9 +33,15 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+const authMiddleware = (req, res, next) => {
+  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  next();
+};
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/issue",authMiddleware, issueRoute);
+app.use("/api/interaction",authMiddleware, interactionRoute);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
