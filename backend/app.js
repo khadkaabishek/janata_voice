@@ -48,7 +48,7 @@ const authMiddleware = (req, res, next) => {
 app.use("/submitkyc", kycRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/issue", authMiddleware, issueRoute);
+app.use("/api/issue", issueRoute);
 app.use("/api/interaction", authMiddleware, interactionRoute);
 
 // Health check endpoint
