@@ -21,6 +21,7 @@ const issueSchema = new mongoose.Schema({
     },
     image: {
         type: String,
+        
         required: [true, "image is required"]
     },
     category: {

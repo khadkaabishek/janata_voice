@@ -1,7 +1,7 @@
-import jwt from "jsonwebtoken";
-import User from "../Models/user.js"; // Assuming you have a User model to fetch user details
+const jwt = require("jsonwebtoken");
+const User = require("../Models/user.js");
 
-export const protect1 = async (req, res, next) => {
+const protect1 = async (req, res, next) => {
   let token;
   console.log("i am here-1");
 
@@ -19,7 +19,7 @@ export const protect1 = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, "abueburb#245");
+    const decoded = jwt.verify(token, "abueburb#245"); // Ideally from env
     const currentUser = await User.findById(decoded.id);
     if (!currentUser) {
       return res.status(401).json({
@@ -31,11 +31,13 @@ export const protect1 = async (req, res, next) => {
     req.user = currentUser;
     next();
   } catch (err) {
-    return res.status(401).json({ status: "fail", message: "Invalid token!" });
+    return res
+      .status(401)
+      .json({ status: "fail", message: "Invalid token!" });
   }
 };
 
-export const restrictTo = (...roles) => {
+const restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
@@ -46,3 +48,5 @@ export const restrictTo = (...roles) => {
     next();
   };
 };
+
+module.exports = { protect1, restrictTo };
