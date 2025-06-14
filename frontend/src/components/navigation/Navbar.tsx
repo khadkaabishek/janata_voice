@@ -1,36 +1,31 @@
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { 
-  Menu, 
-  X, 
-  Globe, 
-  User,
-  LogIn
-} from 'lucide-react';
-import Button from '../ui/Button';
-import { useLanguage } from '../../contexts/LanguageContext';
+import React, { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Menu, X, Globe, User, LogIn } from "lucide-react";
+import Button from "../ui/Button";
+import { useLanguage } from "../../contexts/LanguageContext";
+import photo from '../../../public/janatavoice.png';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage, translations } = useLanguage();
   const location = useLocation();
-  
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'np' : 'en');
+    setLanguage(language === "en" ? "np" : "en");
   };
-  
+
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
   };
 
   const navLinks = [
-    { name: translations['nav.home'], path: '/' },
-    { name: translations['nav.issues'], path: '/dashboard/issues' },
-    { name: translations['nav.discussion'], path: '/dashboard/discussion' },
+    { name: translations["nav.home"], path: "/" },
+    { name: translations["nav.issues"], path: "/dashboard/issues" },
+    { name: translations["nav.discussion"], path: "/dashboard/discussion" },
   ];
 
   return (
@@ -39,31 +34,18 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            {/* <svg
-              viewBox="0 0 24 24"
-              className="w-8 h-8 text-primary-500"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="16" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-            </svg> */}
-            <img 
-  src="janatavoice.jpg" 
-  alt="JanataVoice Logo" 
-  className="h-10 w-20 object-contain" 
-/>
+            <img
+              src={photo}
+              alt="JanataVoice Logo"
+              className="h-10 w-20 object-contain"
+            />
 
             <div>
               <div className="text-xl font-display font-bold text-primary-800">
-                {translations['app.title']}
+                {translations["app.title"]}
               </div>
               <div className="text-xs text-gray-500">
-                {translations['app.subtitle']}
+                {translations["app.subtitle"]}
               </div>
             </div>
           </Link>
@@ -76,8 +58,8 @@ const Navbar: React.FC = () => {
                 to={link.path}
                 className={`px-3 py-2 rounded-md text-sm font-medium ${
                   isActiveRoute(link.path)
-                    ? 'text-primary-700 bg-primary-50'
-                    : 'text-gray-700 hover:text-primary-700 hover:bg-gray-50'
+                    ? "text-primary-700 bg-primary-50"
+                    : "text-gray-700 hover:text-primary-700 hover:bg-gray-50"
                 }`}
               >
                 {link.name}
@@ -92,24 +74,16 @@ const Navbar: React.FC = () => {
               className="flex items-center text-sm text-gray-700 hover:text-primary-700"
             >
               <Globe size={16} className="mr-1" />
-              {language === 'en' ? 'EN | नेपाली' : 'नेपाली | EN'}
+              {language === "en" ? "EN | नेपाली" : "नेपाली | EN"}
             </button>
             <Link to="/login">
-              <Button 
-                variant="secondary" 
-                size="sm" 
-                icon={<LogIn size={16} />}
-              >
-                {translations['nav.login']}
+              <Button variant="secondary" size="sm" icon={<LogIn size={16} />}>
+                {translations["nav.login"]}
               </Button>
             </Link>
             <Link to="/register">
-              <Button 
-                variant="primary" 
-                size="sm" 
-                icon={<User size={16} />}
-              >
-                {translations['nav.register']}
+              <Button variant="primary" size="sm" icon={<User size={16} />}>
+                {translations["nav.register"]}
               </Button>
             </Link>
           </div>
@@ -135,8 +109,8 @@ const Navbar: React.FC = () => {
                   to={link.path}
                   className={`block px-3 py-2 rounded-md text-base font-medium ${
                     isActiveRoute(link.path)
-                      ? 'text-primary-700 bg-primary-50'
-                      : 'text-gray-700 hover:text-primary-700 hover:bg-gray-50'
+                      ? "text-primary-700 bg-primary-50"
+                      : "text-gray-700 hover:text-primary-700 hover:bg-gray-50"
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -151,28 +125,28 @@ const Navbar: React.FC = () => {
                   className="flex items-center text-sm text-gray-700 hover:text-primary-700"
                 >
                   <Globe size={16} className="mr-1" />
-                  {language === 'en' ? 'EN | नेपाली' : 'नेपाली | EN'}
+                  {language === "en" ? "EN | नेपाली" : "नेपाली | EN"}
                 </button>
               </div>
               <div className="mt-3 space-y-2 px-3">
                 <Link to="/login">
-                  <Button 
-                    variant="secondary" 
-                    size="sm" 
-                    fullWidth 
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    fullWidth
                     icon={<LogIn size={16} />}
                   >
-                    {translations['nav.login']}
+                    {translations["nav.login"]}
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button 
-                    variant="primary" 
-                    size="sm" 
-                    fullWidth 
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    fullWidth
                     icon={<User size={16} />}
                   >
-                    {translations['nav.register']}
+                    {translations["nav.register"]}
                   </Button>
                 </Link>
               </div>
