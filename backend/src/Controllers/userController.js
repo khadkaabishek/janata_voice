@@ -1,11 +1,24 @@
 const { validationResult } = require('express-validator');
-const User = require('../Models/User');
+const User = require('../models/User');
 
 // @desc    Get user profile
 // @route   GET /api/users/profile
 // @access  Private
 exports.getProfile = async (req, res) => {
-  try {
+  try {piron3501:~/Documents/HackforNepalProject/janata_voice$ git commit -m "Resolved m
+erge conflicts between main and Abishek branch"
+U       backend/package-lock.json
+U       backend/package.json
+U       backend/src/Controllers/authController.js
+U       backend/src/Controllers/userController.js
+U       frontend/node_modules/.bin/vite
+U       frontend/node_modules/.bin/vite~8da743ec3d04a407b6f6ff83df8822e0e002b3ef
+U       frontend/node_modules/.vite/deps/_metadata.json
+error: Committing is not possible because you have unmerged files.
+hint: Fix them up in the work tree, and then use 'git add/rm <file>'
+hint: as appropriate to mark resolution and make a commit.
+fatal: Exiting because of an unresolved conflict.
+sandeshkhadka@sandeshkhadka-inspiron3501:~/Document
     const user = await User.findById(req.user.id);
     
     if (!user) {
