@@ -1,11 +1,14 @@
-import { useState, useRef } from 'react';
-import { Camera, MapPin, AlertTriangle, X, Mic, Trash2 } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Camera, MapPin, AlertTriangle, X, Mic, Trash2, CheckCircle } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card, { CardContent, CardHeader, CardFooter } from '../components/ui/Card';
 import { ISSUE_CATEGORIES } from '../data/mockData';
 import { IssueCategory } from '../types';
+import { postIssue } from '../services/issueService';
 
 const ReportIssuePage: React.FC = () => {
+  const navigate = useNavigate();
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [images, setImages] = useState<File[]>([]);
   const [title, setTitle] = useState('');
@@ -16,12 +19,31 @@ const ReportIssuePage: React.FC = () => {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errors, setErrors] = useState<{ form?: string }>({});
+  const [geoLocation, setGeoLocation] = useState<{ latitude?: number; longitude?: number }>({});
 
   // Voice recording states
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+
+  // Get user's geolocation
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setGeoLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.warn('Geolocation error:', error);
+        }
+      );
+    }
+  }, []);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -54,6 +76,8 @@ const ReportIssuePage: React.FC = () => {
       mediaRecorderRef.current.onstop = () => {
         const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         setAudioBlob(blob);
+        // Clean up the stream
+        stream.getTracks().forEach(track => track.stop());
       };
 
       mediaRecorderRef.current.start();
@@ -65,40 +89,66 @@ const ReportIssuePage: React.FC = () => {
   };
 
   const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
-    setIsRecording(false);
+    if (mediaRecorderRef.current?.state === 'recording') {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
   };
 
   const removeAudio = () => {
     setAudioBlob(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Basic validation
+    if (!title || !description || images.length === 0) {
+      setErrors({ form: 'Please fill all required fields and upload at least one image' });
+      return;
+    }
+
     setIsSubmitting(true);
+    setErrors({});
 
-    // Simulate API request
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await postIssue({
+        title,
+        description,
+        images,
+        location,
+        isAnonymous,
+        audioBlob,
+        ward: wardNumber,
+        category,
+        latitude: geoLocation.latitude,
+        longitude: geoLocation.longitude
+      });
+
       setIsSuccess(true);
+      resetForm();
+    } catch (error: any) {
+      setErrors({ form: error.message || "Something went wrong. Please try again." });
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-      setTimeout(() => {
-        setIsSuccess(false);
-        setTitle('');
-        setDescription('');
-        setCategory('road');
-        setLocation('');
-        setWardNumber(5);
-        setIsAnonymous(false);
-        setImages([]);
-        setPreviewImages([]);
-        setAudioBlob(null);
-      }, 5000);
-    }, 1500);
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    setCategory('road');
+    setLocation('');
+    setWardNumber(5);
+    setIsAnonymous(false);
+    setImages([]);
+    setPreviewImages([]);
+    setAudioBlob(null);
   };
 
   return (
-    <div className="py-6 px-2 md:px-6">
+    <div className="py-6 px-2 md:px-6 max-w-4xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-primary-800 mb-2">Report an Issue</h1>
         <p className="text-gray-600">
@@ -110,14 +160,17 @@ const ReportIssuePage: React.FC = () => {
         <Card>
           <CardContent className="py-10 text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-success-light/20 text-success rounded-full mb-4">
-              <AlertTriangle size={32} />
+              <CheckCircle size={32} />
             </div>
             <h2 className="text-2xl font-bold text-success-dark mb-2">Report Submitted Successfully!</h2>
             <p className="text-gray-600 mb-6">
               Thank you for your report. Municipal authorities will review it and take appropriate action.
               You can track the status of your report in the Issues Dashboard.
             </p>
-            <Button variant="primary" onClick={() => setIsSuccess(false)}>Report Another Issue</Button>
+            <div className="flex gap-4 justify-center">
+              <Button variant="primary" onClick={() => navigate('/')}>Go to Dashboard</Button>
+              <Button variant="outline" onClick={() => setIsSuccess(false)}>Report Another Issue</Button>
+            </div>
           </CardContent>
         </Card>
       ) : (
@@ -128,6 +181,13 @@ const ReportIssuePage: React.FC = () => {
             </CardHeader>
 
             <CardContent className="space-y-6">
+              {errors.form && (
+                <div className="p-4 bg-red-50 text-red-600 rounded-md border border-red-100">
+                  <AlertTriangle className="inline mr-2" size={18} />
+                  {errors.form}
+                </div>
+              )}
+
               <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">Issue Title *</label>
                 <input
@@ -229,6 +289,11 @@ const ReportIssuePage: React.FC = () => {
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
+                {geoLocation.latitude && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Your current location: {geoLocation.latitude?.toFixed(4)}, {geoLocation.longitude?.toFixed(4)}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -290,9 +355,22 @@ const ReportIssuePage: React.FC = () => {
               </div>
             </CardContent>
 
-            <CardFooter>
-              <Button type="submit" variant="primary" disabled={isSubmitting}>
-                {isSubmitting ? 'Submitting...' : 'Submit Report'}
+            <CardFooter className="flex justify-end">
+              <Button 
+                type="submit" 
+                variant="primary" 
+                disabled={isSubmitting}
+                className="min-w-32"
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Submitting...
+                  </>
+                ) : 'Submit Report'}
               </Button>
             </CardFooter>
           </form>

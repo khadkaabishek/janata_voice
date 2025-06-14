@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Layout, ListFilter, Map as MapIcon } from "lucide-react";
+import { Layout, ListFilter, Map as MapIcon, Loader } from "lucide-react";
 import IssueCard from "../components/issues/IssueCard";
 import IssueFilter, { FilterState } from "../components/issues/IssueFilter";
 import Button from "../components/ui/Button";
-import { MOCK_ISSUES } from "../data/mockData";
-import { Issue } from "../types";
 import { useLanguage } from "../contexts/LanguageContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
@@ -13,7 +11,9 @@ import "leaflet/dist/leaflet.css";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import { fetchIssues, Issue } from "../services/issueService";
 
+// Fix for default Leaflet marker icons
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
@@ -21,48 +21,19 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// --- DUMMY DATA FOR DEVELOPMENT (replace with DB data later) ---
-const DUMMY_ISSUES = [
-  {
-    id: "101",
-    title: "Uncollected Garbage",
-    description: "Garbage pileup near Durbar Marg.",
-    category: "garbage",
-    status: "pending",
-    latitude: 27.713,
-    longitude: 85.317,
-  },
-  {
-    id: "102",
-    title: "Broken Street Light",
-    description: "No lighting at Putalisadak crossing.",
-    category: "electricity",
-    status: "in-progress",
-    latitude: 27.7112,
-    longitude: 85.3201,
-  },
-  {
-    id: "103",
-    title: "Water Pipe Leakage",
-    description: "Continuous leakage near Bhadrakali temple.",
-    category: "water",
-    status: "pending",
-    latitude: 27.6991,
-    longitude: 85.3102,
-  },
-];
-// --- END DUMMY DATA ---
-
 const MAP_CENTER: [number, number] = [27.7172, 85.324];
 
 const IssuesPage = () => {
   const { translations } = useLanguage();
   const [searchParams] = useSearchParams();
-  const [filteredIssues, setFilteredIssues] = useState<Issue[]>(MOCK_ISSUES);
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [filteredIssues, setFilteredIssues] = useState<Issue[]>([]);
   const [viewMode, setViewMode] = useState<"grid" | "list" | "map">(() => {
     return (searchParams.get("view") as "grid" | "list" | "map") || "grid";
   });
   const [isFilterVisible, setIsFilterVisible] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [filters, setFilters] = useState<FilterState>({
     search: searchParams.get("search") || "",
@@ -77,63 +48,52 @@ const IssuesPage = () => {
   const criticalFilter = searchParams.get("critical");
   const myReportsFilter = searchParams.get("my");
 
+  // Fetch issues on component mount and when filters change
   useEffect(() => {
-    let result = [...MOCK_ISSUES];
+    const loadIssues = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await fetchIssues({
+          search: filters.search,
+          category: filters.category,
+          status: filters.status,
+          ward: wardFilter ? parseInt(wardFilter) : filters.ward || undefined,
+          sortBy: filters.sortBy,
+          critical: criticalFilter === "true",
+          myReports: myReportsFilter === "true"
+        });
+        setIssues(data);
+        setFilteredIssues(data); // Initial filtered state is same as fetched data
+      } catch (err) {
+        console.error("Failed to load issues:", err);
+        setError(translations["errors.failedToLoadIssues"] || "Failed to load issues");
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    // Filtering logic...
+    loadIssues();
+  }, [filters, wardFilter, criticalFilter, myReportsFilter, translations]);
+
+  // Apply client-side filtering when needed
+  useEffect(() => {
+    if (issues.length === 0) return;
+
+    let result = [...issues];
+
+    // Apply additional client-side filters if needed
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       result = result.filter(
         (issue) =>
           issue.title.toLowerCase().includes(searchLower) ||
-          issue.description.toLowerCase().includes(searchLower)
+          (issue.description && issue.description.toLowerCase().includes(searchLower))
       );
-    }
-    if (filters.category) {
-      result = result.filter((issue) => issue.category === filters.category);
-    }
-    if (filters.status) {
-      result = result.filter((issue) => issue.status === filters.status);
-    }
-    if (wardFilter) {
-      result = result.filter(
-        (issue) => issue.wardNumber === parseInt(wardFilter)
-      );
-    }
-    if (criticalFilter === "true") {
-      result = result.filter(
-        (issue) =>
-          issue.status === "pending" &&
-          ["water", "electricity", "public-safety"].includes(issue.category)
-      );
-    }
-    if (myReportsFilter === "true") {
-      result = result.filter((issue) => issue.reportedBy === "user-1");
-    }
-    switch (filters.sortBy) {
-      case "votes":
-        result.sort((a, b) => b.votes - a.votes);
-        break;
-      case "date":
-        result.sort(
-          (a, b) =>
-            new Date(b.reportedAt).getTime() - new Date(a.reportedAt).getTime()
-        );
-        break;
-      case "status":
-        const statusPriority: Record<string, number> = {
-          pending: 0,
-          "in-progress": 1,
-          resolved: 2,
-        };
-        result.sort(
-          (a, b) => statusPriority[a.status] - statusPriority[b.status]
-        );
-        break;
     }
 
     setFilteredIssues(result);
-  }, [filters, wardFilter, criticalFilter, myReportsFilter]);
+  }, [issues, filters]);
 
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
@@ -152,11 +112,42 @@ const IssuesPage = () => {
   };
 
   const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center items-center h-64">
+          <Loader className="animate-spin text-primary-500" size={48} />
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            {translations["errors.errorOccurred"] || "Error occurred"}
+          </h3>
+          <p className="text-gray-600">{error}</p>
+          <Button
+            variant="primary"
+            className="mt-4"
+            onClick={() => window.location.reload()}
+          >
+            {translations["button.retry"] || "Try Again"}
+          </Button>
+        </div>
+      );
+    }
+
     if (viewMode === "map") {
       return (
         <div className="bg-white rounded-lg shadow-sm p-4 h-[calc(100vh-300px)] min-h-[500px]">
-          {/* Rectangle box with the map only inside */}
-          <div style={{ width: "100%", height: "100%", borderRadius: 12, overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.05)" }}>
+          <div style={{ 
+            width: "100%", 
+            height: "100%", 
+            borderRadius: 12, 
+            overflow: "hidden", 
+            boxShadow: "0 2px 8px rgba(0,0,0,0.05)" 
+          }}>
             <MapContainer
               center={MAP_CENTER}
               zoom={13}
@@ -173,16 +164,28 @@ const IssuesPage = () => {
                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              {/* ---- DUMMY_ISSUES used below. Replace with your fetched data later ---- */}
-              {DUMMY_ISSUES.map((issue) => (
+              {filteredIssues.filter(issue => issue.latitude && issue.longitude).map((issue) => (
                 <Marker
                   key={issue.id}
-                  position={[issue.latitude, issue.longitude] as [number, number]}
+                  position={[issue.latitude!, issue.longitude!]}
                 >
                   <Popup>
-                    <strong>{issue.title}</strong>
-                    <br />
-                    {issue.description}
+                    <div className="min-w-[200px]">
+                      <h4 className="font-bold text-primary-700">{issue.title}</h4>
+                      <p className="text-sm text-gray-600 mt-1">{issue.description}</p>
+                      <div className="mt-2 flex justify-between items-center">
+                        <span className="text-xs px-2 py-1 bg-gray-100 rounded-full">
+                          {translations[`categories.${issue.category}`] || issue.category}
+                        </span>
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          issue.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                          issue.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                          'bg-green-100 text-green-800'
+                        }`}>
+                          {translations[`status.${issue.status}`] || issue.status}
+                        </span>
+                      </div>
+                    </div>
                   </Popup>
                 </Marker>
               ))}
@@ -214,7 +217,7 @@ const IssuesPage = () => {
         }`}
       >
         {filteredIssues.map((issue) => (
-          <IssueCard key={issue.id} issue={issue} />
+          <IssueCard key={issue.id} issue={issue} viewMode={viewMode} />
         ))}
       </div>
     );
