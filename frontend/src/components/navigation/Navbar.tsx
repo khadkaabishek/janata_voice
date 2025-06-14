@@ -8,7 +8,7 @@ import { useAuth } from "./../../utils/user";
 const Navbar: React.FC = () => {
 
 
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn,verify } = useAuth();
 console.log(isLoggedIn);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage, translations } = useLanguage();
@@ -77,21 +77,31 @@ console.log(isLoggedIn);
             
             
           {isLoggedIn ? (
-        <button className="bg-green-600 text-white px-4 py-2 rounded">✅ Done</button>
-      ) : (
-        <>
-           <Link to="/login">
-              <Button variant="secondary" size="sm" icon={<LogIn size={16} />}>
-                {translations["nav.login"]}
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button variant="primary" size="sm" icon={<User size={16} />}>
-                {translations["nav.register"]}
-              </Button>
-            </Link>
-        </>
-      )}
+          verify ? (
+       <Button variant="outline" size="sm" disabled>
+          Pending...
+           </Button>
+  ) : (
+    <Link to="/kyc">
+      <Button variant="secondary" size="sm" icon={<LogIn size={16} />}>
+        Verify
+      </Button>
+    </Link>
+  )
+) : (
+  <>
+    <Link to="/login">
+      <Button variant="secondary" size="sm" icon={<LogIn size={16} />}>
+        {translations["nav.login"]}
+      </Button>
+    </Link>
+    <Link to="/register">
+      <Button variant="primary" size="sm" icon={<User size={16} />}>
+        {translations["nav.register"]}
+      </Button>
+    </Link>
+  </>
+)}
             
             
             

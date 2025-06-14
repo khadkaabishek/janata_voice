@@ -19,6 +19,7 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 // Loading component
 import LoadingSpinner from './components/ui/LoadingSpinner';
+import KYCForm from './pages/kycForm';
 
 function App() {
 
@@ -43,6 +44,7 @@ function App() {
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<HomePage />} />
+          <Route path='kyc'  element ={<KYCForm/>}/>
           <Route path="about" element={<AboutPage />} />
           <Route path="contact" element={<ContactPage />} />
           <Route path="login" element={<LoginPage />} />
