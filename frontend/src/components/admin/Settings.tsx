@@ -138,6 +138,17 @@ const Settings: React.FC = () => {
         </div>
       </div>
 
+    {/* Hide any footer elements */}
+      <style jsx>{`
+        footer,
+        .footer,
+        [class*="footer"],
+        [class*="quick-links"],
+        [class*="contact-section"] {
+          display: none !important;
+        }
+      `}</style>
+
       <div>
         <h3 className="text-lg font-medium text-gray-900 mb-4">Change Password</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -431,5 +442,6 @@ const Settings: React.FC = () => {
     </div>
   );
 };
+
 
 export default Settings;
