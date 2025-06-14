@@ -1,42 +1,106 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { UserPlus, Mail, Lock, Eye, EyeOff, User, MapPin } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, MapPin, Eye, EyeOff,  AlertCircle } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card, { CardContent, CardHeader, CardFooter } from '../components/ui/Card';
-import { useLanguage } from '../contexts/LanguageContext';
+import { registerUser } from '../api';
+import { useNavigate } from 'react-router-dom';
 
-const RegisterPage = () => { 
-  const { translations } = useLanguage(); // Translation hook
+
+const RegisterPage: React.FC = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
-    address: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    address: '',
+    agreeTerms: false
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // In a real app, you would handle registration and redirect
-    }, 1500);
-  };
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
+  
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) {
+      newErrors.name = 'Name is required';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    if (!formData.address.trim()) {
+      newErrors.address = 'Address is required';
+    }
+    
+    if (!formData.agreeTerms) {
+      newErrors.agreeTerms = 'You must agree to the terms and conditions';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    if (!validateForm()) return;
+  
+    setIsLoading(true);
+    setErrors({});
+  
+    try {
+      const res = await registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        address: formData.address,
+        agreeTerms: formData.agreeTerms,
+      });
+  
+      if (res.status === "success") {
+        navigate('/login'); // Redirect on success
+      } else {
+        setErrors({ form: "Registration failed. Please try again." });
+      }
+    } catch (error: any) {
+      setErrors({ form: error.message || "Something went wrong." });
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+
   
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -56,52 +120,59 @@ const RegisterPage = () => {
               alt="JanataVoice Logo" 
               className="h-8 w-12 object-contain" 
             />
-            <span className="ml-2 text-2xl font-display font-bold text-primary-800">
-              {translations['app.title']} 
-            </span>
+            <span className="ml-2 text-2xl font-display font-bold text-primary-800">Janata Voice</span>
           </Link>
-          <h2 className="text-3xl font-bold text-gray-900">
-            {translations['auth.register.title']} 
-          </h2>
+          <h2 className="text-3xl font-bold text-gray-900">Create your account</h2>
           <p className="mt-2 text-gray-600">
-            {translations['auth.register.subtitle']} 
+            Join the community and start reporting issues in your area
           </p>
         </div>
         
         <Card>
           <CardHeader>
-            <h3 className="text-xl font-semibold text-primary-700">
-              {translations['nav.register']} 
-            </h3>
+            <h3 className="text-xl font-semibold text-primary-700">Register</h3>
           </CardHeader>
+          {errors.form && (
+    <div className="mb-4 text-red-600 flex items-center">
+    <AlertCircle size={16} className="mr-2" /> {errors.form}
+     </div>
+)}
+
           
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-6">
               <div>
-                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
-                  {translations['form.fullName']} 
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  Full Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <User size={18} className="text-gray-400" />
                   </div>
                   <input
-                    id="fullName"
-                    name="fullName"
+                    id="name"
+                    name="name"
                     type="text"
                     autoComplete="name"
                     required
-                    value={formData.fullName}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder={translations['form.fullNamePlaceholder']}
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-3 py-2 border ${
+                      errors.name ? 'border-red-500' : 'border-gray-300'
+                    } rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500`}
+                    placeholder="Your Name"
                   />
                 </div>
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertCircle size={14} className="mr-1" /> {errors.name}
+                  </p>
+                )}
               </div>
               
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  {translations['form.email']} 
+                  Email Address
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -114,16 +185,23 @@ const RegisterPage = () => {
                     autoComplete="email"
                     required
                     value={formData.email}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder={translations['form.emailPlaceholder']} 
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-3 py-2 border ${
+                      errors.email ? 'border-red-500' : 'border-gray-300'
+                    } rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500`}
+                    placeholder="your.email@example.com"
                   />
                 </div>
+                {errors.email && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertCircle size={14} className="mr-1" /> {errors.email}
+                  </p>
+                )}
               </div>
               
               <div>
                 <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                  {translations['form.address']} 
+                  Address
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -133,19 +211,25 @@ const RegisterPage = () => {
                     id="address"
                     name="address"
                     type="text"
-                    autoComplete="address-line1"
                     required
                     value={formData.address}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder={translations['form.addressPlaceholder']} 
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-3 py-2 border ${
+                      errors.address ? 'border-red-500' : 'border-gray-300'
+                    } rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500`}
+                    placeholder="Your full address"
                   />
                 </div>
+                {errors.address && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertCircle size={14} className="mr-1" /> {errors.address}
+                  </p>
+                )}
               </div>
               
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  {translations['form.password']}
+                  Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -158,16 +242,17 @@ const RegisterPage = () => {
                     autoComplete="new-password"
                     required
                     value={formData.password}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder={translations['form.passwordPlaceholder']} 
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-10 py-2 border ${
+                      errors.password ? 'border-red-500' : 'border-gray-300'
+                    } rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500`}
+                    placeholder="••••••••"
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button
                       type="button"
                       onClick={togglePasswordVisibility}
                       className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                      title={showPassword ? translations['button.hidePassword'] : translations['button.showPassword']}
                     >
                       {showPassword ? (
                         <EyeOff size={18} />
@@ -177,14 +262,20 @@ const RegisterPage = () => {
                     </button>
                   </div>
                 </div>
-                <p className="mt-1 text-sm text-gray-500">
-                  {translations['form.passwordRequirement']}
-                </p>
+                {errors.password ? (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertCircle size={14} className="mr-1" /> {errors.password}
+                  </p>
+                ) : (
+                  <p className="mt-1 text-xs text-gray-500">
+                    Password must be at least 8 characters long
+                  </p>
+                )}
               </div>
               
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                  {translations['form.confirmPassword']} 
+                  Confirm Password
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -197,16 +288,17 @@ const RegisterPage = () => {
                     autoComplete="new-password"
                     required
                     value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder={translations['form.passwordPlaceholder']} 
+                    onChange={handleChange}
+                    className={`block w-full pl-10 pr-10 py-2 border ${
+                      errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                    } rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500`}
+                    placeholder="••••••••"
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button
                       type="button"
                       onClick={toggleConfirmPasswordVisibility}
                       className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                      title={showConfirmPassword ? translations['button.hidePassword'] : translations['button.showPassword']}
                     >
                       {showConfirmPassword ? (
                         <EyeOff size={18} />
@@ -216,29 +308,44 @@ const RegisterPage = () => {
                     </button>
                   </div>
                 </div>
+                {errors.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <AlertCircle size={14} className="mr-1" /> {errors.confirmPassword}
+                  </p>
+                )}
               </div>
               
-              <div className="flex items-center">
-                <input
-                  id="agree-terms"
-                  name="agree-terms"
-                  type="checkbox"
-                  checked={agreeToTerms}
-                  onChange={(e) => setAgreeToTerms(e.target.checked)}
-                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
-                  required
-                />
-                <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-700">
-                  {translations['auth.agreeToTerms.prefix']}{' '}
-                  <Link to="/terms" className="text-primary-600 hover:text-primary-500">
-                    {translations['footer.terms']}
-                  </Link>
-                  {' '}{translations['auth.agreeToTerms.and']}{' '}
-                  <Link to="/privacy" className="text-primary-600 hover:text-primary-500">
-                    {translations['footer.privacy']}
-                  </Link>
-                </label>
+              <div className="flex items-start">
+                <div className="flex items-center h-5">
+                  <input
+                    id="agreeTerms"
+                    name="agreeTerms"
+                    type="checkbox"
+                    checked={formData.agreeTerms}
+                    onChange={handleChange}
+                    className={`h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded ${
+                      errors.agreeTerms ? 'border-red-500' : ''
+                    }`}
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor="agreeTerms" className={`font-medium ${errors.agreeTerms ? 'text-red-500' : 'text-gray-700'}`}>
+                    I agree to the{' '}
+                    <Link to="/terms" className="text-primary-600 hover:text-primary-500">
+                      Terms and Conditions
+                    </Link>
+                    {' '}and{' '}
+                    <Link to="/privacy" className="text-primary-600 hover:text-primary-500">
+                      Privacy Policy
+                    </Link>
+                  </label>
+                </div>
               </div>
+              {errors.agreeTerms && (
+                <p className="text-sm text-red-600 flex items-center">
+                  <AlertCircle size={14} className="mr-1" /> {errors.agreeTerms}
+                </p>
+              )}
             </CardContent>
             
             <CardFooter className="space-y-4">
@@ -247,16 +354,16 @@ const RegisterPage = () => {
                 variant="primary"
                 fullWidth
                 isLoading={isLoading}
-                disabled={isLoading || !agreeToTerms}
+                disabled={isLoading}
                 icon={<UserPlus size={16} />}
               >
-                {translations['button.createAccount']}
+                Create Account
               </Button>
               
               <div className="text-center text-sm text-gray-600">
-                {translations['auth.alreadyHaveAccount']}{' '}
+                Already have an account?{' '}
                 <Link to="/login" className="text-primary-600 hover:text-primary-500 font-medium">
-                  {translations['button.signIn']} 
+                  Sign in
                 </Link>
               </div>
             </CardFooter>

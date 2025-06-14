@@ -1,5 +1,5 @@
-const jwt = require('jsonwebtoken');
-const User = require('../Models/User');
+const jwt = require("jsonwebtoken");
+const User = require("../Models/user");
 
 // Protect routes
 exports.protect = async (req, res, next) => {
@@ -7,8 +7,11 @@ exports.protect = async (req, res, next) => {
     let token;
 
     // Check for token in header
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-      token = req.headers.authorization.split(' ')[1];
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
     }
     // Check for token in cookies
     else if (req.cookies.token) {
@@ -18,8 +21,8 @@ exports.protect = async (req, res, next) => {
     // Make sure token exists
     if (!token) {
       return res.status(401).json({
-        status: 'error',
-        message: 'Not authorized to access this route'
+        status: "error",
+        message: "Not authorized to access this route",
       });
     }
 
@@ -32,34 +35,32 @@ exports.protect = async (req, res, next) => {
 
       if (!user) {
         return res.status(401).json({
-          status: 'error',
-          message: 'No user found with this token'
+          status: "error",
+          message: "No user found with this token",
         });
       }
 
       // Check if user is active
       if (!user.isActive) {
         return res.status(401).json({
-          status: 'error',
-          message: 'User account has been deactivated'
+          status: "error",
+          message: "User account has been deactivated",
         });
       }
 
       req.user = user;
       next();
-
     } catch (error) {
       return res.status(401).json({
-        status: 'error',
-        message: 'Not authorized to access this route'
+        status: "error",
+        message: "Not authorized to access this route",
       });
     }
-
   } catch (error) {
-    console.error('Auth middleware error:', error);
+    console.error("Auth middleware error:", error);
     res.status(500).json({
-      status: 'error',
-      message: 'Server error in authentication'
+      status: "error",
+      message: "Server error in authentication",
     });
   }
 };
@@ -69,8 +70,8 @@ exports.authorize = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
-        status: 'error',
-        message: `User role ${req.user.role} is not authorized to access this route`
+        status: "error",
+        message: `User role ${req.user.role} is not authorized to access this route`,
       });
     }
     next();
@@ -81,8 +82,8 @@ exports.authorize = (...roles) => {
 exports.requireVerification = (req, res, next) => {
   if (!req.user.isVerified) {
     return res.status(403).json({
-      status: 'error',
-      message: 'Please verify your email address to access this feature'
+      status: "error",
+      message: "Please verify your email address to access this feature",
     });
   }
   next();

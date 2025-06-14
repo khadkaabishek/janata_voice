@@ -1,23 +1,17 @@
-// // src/api.ts
-// export async function fetchSomeData() {
-//   const response = await fetch('/api/your-endpoint');
-//   if (!response.ok) {
-//     throw new Error(`HTTP error! status: ${response.status}`);
-//   }
-//   return response.json();
-// }
-// src/api.ts
+const BASE_URL = "http://localhost:5001"; 
 export async function registerUser(formData: {
   name: string;
   email: string;
   password: string;
   address: string;
+  agreeTerms:boolean;
 }) {
-  const response = await fetch('/api/auth/register', {
+  const response = await fetch(`${BASE_URL}/api/auth/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    credentials: "include",
     body: JSON.stringify(formData),
   });
   if (!response.ok) {
