@@ -1,9 +1,5 @@
 const { validationResult } = require('express-validator');
 const User = require('../Models/user');
-
-// @desc    Get user profile
-// @route   GET /api/users/profile
-// @access  Private
 exports.getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -29,10 +25,6 @@ exports.getProfile = async (req, res) => {
     });
   }
 };
-
-// @desc    Update user profile
-// @route   PUT /api/users/profile
-// @access  Private
 exports.updateProfile = async (req, res) => {
   try {
     // Check for validation errors
@@ -56,7 +48,7 @@ exports.updateProfile = async (req, res) => {
       });
     }
 
-    // Update allowed fields
+
     if (name) user.name = name;
     if (address) user.address = address;
 
@@ -78,10 +70,6 @@ exports.updateProfile = async (req, res) => {
     });
   }
 };
-
-// @desc    Change password
-// @route   PUT /api/users/change-password
-// @access  Private
 exports.changePassword = async (req, res) => {
   try {
     // Check for validation errors

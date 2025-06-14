@@ -14,19 +14,18 @@ const generateToken = (id) => {
 // Send token response
 const sendTokenResponse = (user, statusCode, res, message = "Success") => {
   const token = generateToken(user._id);
-
-  // Set cookie options
-  // Use environment variable for cookie expiration or default to 7 days
+  // console.log(token)
   const options = {
     expires: new Date(
       Date.now() + (process.env.JWT_COOKIE_EXPIRE || 7) * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-   // In your cookie settings (authController.js)
-secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    path: "/",
+    secure: false,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   };
 
+  
   res
     .status(statusCode)
     .cookie("token", token, options)
@@ -76,7 +75,6 @@ exports.register = async (req, res) => {
 
     // ✅ Automatically log in the user after registration
     sendTokenResponse(user, 201, res, "User registered successfully");
-
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({
@@ -127,6 +125,7 @@ exports.login = async (req, res, next) => {
 
     await user.updateLastLogin();
     sendTokenResponse(user, 200, res, "Login successful");
+    // console.log("Token My",generatedToken);
   } catch (error) {
     console.error("Login error:", error);
     res.status(500).json({

@@ -15,10 +15,8 @@ const { errorHandler } = require("./src/Middlewares/errorHandler");
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Connect to MongoDB
 connectDB();
 
-// CORS configuration
 app.use(
   cors({
     origin: "http://localhost:5173", // Your React app URL
@@ -27,21 +25,19 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-// app.options("*", cors());
 
-// Body parsing middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 const authMiddleware = (req, res, next) => {
-  if (!req.user) return res.status(401).json({ error: 'Unauthorized' });
+  if (!req.user) return res.status(401).json({ error: "Unauthorized" });
   next();
 };
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/issue",authMiddleware, issueRoute);
-app.use("/api/interaction",authMiddleware, interactionRoute);
+app.use("/api/issue", authMiddleware, issueRoute);
+app.use("/api/interaction", authMiddleware, interactionRoute);
 
 // Health check endpoint
 app.get("/api/health", (req, res) => {
@@ -52,15 +48,6 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// 404 handler
-// app.use("*", (req, res) => {
-//   res.status(404).json({
-//     status: "error",
-//     message: "Route not found",
-//   });
-// });
-
-// Global error handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {

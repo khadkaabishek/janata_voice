@@ -14,11 +14,12 @@ import {
 } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
-type SidebarProps = {
+interface SidebarProps {
   className?: string;
-};
+  userData: any; // Replace with specific type if available
+}
 
-const Sidebar: React.FC<SidebarProps> = ({ className }) => {
+const Sidebar: React.FC<SidebarProps> = ({ className, userData }) => {
   const location = useLocation();
   
   const isActiveRoute = (path: string) => {
@@ -26,65 +27,20 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   };
 
   const sidebarLinks = [
-    { 
-      name: 'All Issues', 
-      path: '/dashboard/issues', 
-      icon: <FileText size={20} /> 
-    },
-    { 
-      name: 'Ward Issues', 
-      path: '/dashboard/issues?ward=5', 
-      icon: <AlertTriangle size={20} /> 
-    },
-    { 
-      name: 'Critical Issues', 
-      path: '/dashboard/issues?critical=true', 
-      icon: <AlertCircle size={20} /> 
-    },
-    { 
-      name: 'My Reports', 
-      path: '/dashboard/issues?my=true', 
-      icon: <User size={20} /> 
-    },
-    { 
-      name: 'Map View', 
-      path: '/dashboard/issues?view=map', 
-      icon: <Map size={20} /> 
-    },
-    { 
-      name: 'Discussion', 
-      path: '/dashboard/discussion', 
-      icon: <MessageSquare size={20} /> 
-    },
-    { 
-      name: 'Ward Analytics', 
-      path: '/dashboard/analytics', 
-      icon: <BarChart3 size={20} /> 
-    },
+    { name: 'All Issues', path: '/dashboard/issues', icon: <FileText size={20} /> },
+    { name: 'Ward Issues', path: '/dashboard/issues?ward=5', icon: <AlertTriangle size={20} /> },
+    { name: 'Critical Issues', path: '/dashboard/issues?critical=true', icon: <AlertCircle size={20} /> },
+    { name: 'My Reports', path: '/dashboard/issues?my=true', icon: <User size={20} /> },
+    { name: 'Map View', path: '/dashboard/issues?view=map', icon: <Map size={20} /> },
+    { name: 'Discussion', path: '/dashboard/discussion', icon: <MessageSquare size={20} /> },
+    { name: 'Ward Analytics', path: '/dashboard/analytics', icon: <BarChart3 size={20} /> },
   ];
 
   return (
     <aside className={cn('bg-white border-r border-gray-200 h-full flex flex-col', className)}>
       <div className="p-4 border-b border-gray-200">
         <Link to="/" className="flex items-center space-x-2">
-          {/* <svg
-            viewBox="0 0 24 24"
-            className="w-6 h-6 text-primary-500"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="16" x2="12" y2="12" />
-            <line x1="12" y1="8" x2="12.01" y2="8" />
-          </svg> */}
-          <img 
-  src="/janatavoice.jpg" 
-  alt="JanataVoice Logo" 
-  className="h-8 w-12 object-contain" 
-/>
+          <img src="/janatavoice.jpg" alt="JanataVoice Logo" className="h-8 w-12 object-contain" />
           <div className="text-lg font-display font-bold text-primary-800">Janata Voice</div>
         </Link>
       </div>
@@ -137,13 +93,17 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center">
           <img
-            src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg"
+            src={userData?.avatar || "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg"}
             alt="User Avatar"
             className="w-10 h-10 rounded-full mr-3"
           />
           <div>
-            <div className="font-medium text-gray-800">Aarav Sharma</div>
-            <div className="text-xs text-gray-500">Ward 5 Resident</div>
+            <div className="font-medium text-gray-800">
+              {userData?.data.user.name || 'Loading...'}
+            </div>
+            <div className="text-xs text-gray-500">
+              {userData?.ward ? `Ward ${userData.ward} Resident` : 'Ward info unavailable'}
+            </div>
           </div>
         </div>
         <button className="mt-4 w-full flex items-center justify-center py-2 px-4 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors">
