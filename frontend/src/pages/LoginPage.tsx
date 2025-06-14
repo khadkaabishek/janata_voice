@@ -4,8 +4,10 @@ import { LogIn, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import Button from '../components/ui/Button';
 import Card, { CardContent, CardHeader, CardFooter } from '../components/ui/Card';
 import { useLanguage } from '../contexts/LanguageContext'; // Added this import
+import { useAuth } from '../utils/user';
 
 const LoginPage = () => { // Removed React.FC
+  const { login } = useAuth();
   const { translations } = useLanguage(); // Added translation hook
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,10 +39,10 @@ const LoginPage = () => { // Removed React.FC
       if (!response.ok) {
         throw new Error(data.message || 'Login failed. Please try again.');
       }
- 
+      login();
       localStorage.setItem('token', data.data.token); // Assumes response includes { token: '...' }
   
-      navigate('/dashboard'); 
+      navigate('/dashboard/issues'); 
   
     } catch (err: any) {
       alert(err.message || 'An unexpected error occurred.');

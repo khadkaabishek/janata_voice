@@ -5,15 +5,20 @@ const User = require("../Models/user");
 const { sendEmail } = require("../Utils/sendEmail");
 
 // Generate JWT Token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET || "abueburb#245", {
-    expiresIn: process.env.JWT_EXPIRE || "7d",
-  });
+const generateToken = (id, isLoggedIn) => {
+  return jwt.sign(
+    { id, isLoggedIn: true },
+    process.env.JWT_SECRET || "abueburb#245",
+    {
+      expiresIn: process.env.JWT_EXPIRE || "7d",
+    }
+  );
 };
 
 // Send token response
 const sendTokenResponse = (user, statusCode, res, message = "Success") => {
-  const token = generateToken(user._id);
+  const isLoggedIn = false;
+  const token = generateToken(user._id, isLoggedIn);
   // console.log(token)
   const options = {
     expires: new Date(
@@ -22,11 +27,10 @@ const sendTokenResponse = (user, statusCode, res, message = "Success") => {
     httpOnly: true,
     path: "/",
     secure: false,
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   };
 
-  
-  res
+  return res
     .status(statusCode)
     .cookie("token", token, options)
     .json({

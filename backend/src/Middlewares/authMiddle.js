@@ -20,7 +20,6 @@ export const protect1 = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, "abueburb#245");
-
     const currentUser = await User.findById(decoded.id);
     if (!currentUser) {
       return res.status(401).json({
@@ -30,7 +29,6 @@ export const protect1 = async (req, res, next) => {
     }
 
     req.user = currentUser;
-
     next();
   } catch (err) {
     return res.status(401).json({ status: "fail", message: "Invalid token!" });

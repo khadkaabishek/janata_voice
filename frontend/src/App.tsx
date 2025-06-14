@@ -21,6 +21,22 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 function App() {
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   return (
     
     <Suspense fallback={<LoadingSpinner />}>
@@ -33,7 +49,7 @@ function App() {
           <Route path="register" element={<RegisterPage />} />
         </Route>
         
-        <Route path="dashboard" element={<DashboardLayout />}>
+        <Route path="/dashboard" element={<DashboardLayout />}>
           <Route path="issues" element={<IssuesPage />} />
           <Route path="report" element={<ReportIssuePage />} />
           <Route path="discussion" element={<DiscussionPage />} />

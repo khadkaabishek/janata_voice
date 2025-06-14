@@ -15,7 +15,7 @@ const {
   validatePasswordChange,
   handleValidationErrors,
 } = require("../Middlewares/validation");
-
+const loggRoute = require("./logRoute");
 const router = express.Router();
 
 // All routes are protected
@@ -36,7 +36,7 @@ router.put(
   changePassword
 );
 router.delete("/account", deleteAccount);
-
+router.get("/islogg", loggRoute);
 
 router.get("/", authorize("admin"), getUsers);
 router.get("/:id", authorize("admin"), getUser);

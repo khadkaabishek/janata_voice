@@ -4,8 +4,12 @@ import { Menu, X, Globe, User, LogIn } from "lucide-react";
 import Button from "../ui/Button";
 import { useLanguage } from "../../contexts/LanguageContext";
 import photo from '../../../public/janatavoice.png';
-
+import { useAuth } from "./../../utils/user";
 const Navbar: React.FC = () => {
+
+
+  const { isLoggedIn } = useAuth();
+console.log(isLoggedIn);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage, translations } = useLanguage();
   const location = useLocation();
@@ -69,14 +73,14 @@ const Navbar: React.FC = () => {
 
           {/* Language and Login/Register */}
           <div className="hidden md:flex items-center space-x-4">
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center text-sm text-gray-700 hover:text-primary-700"
-            >
-              <Globe size={16} className="mr-1" />
-              {language === "en" ? "EN | नेपाली" : "नेपाली | EN"}
-            </button>
-            <Link to="/login">
+            
+            
+            
+          {isLoggedIn ? (
+        <button className="bg-green-600 text-white px-4 py-2 rounded">✅ Done</button>
+      ) : (
+        <>
+           <Link to="/login">
               <Button variant="secondary" size="sm" icon={<LogIn size={16} />}>
                 {translations["nav.login"]}
               </Button>
@@ -86,6 +90,19 @@ const Navbar: React.FC = () => {
                 {translations["nav.register"]}
               </Button>
             </Link>
+        </>
+      )}
+            
+            
+            
+            <button
+              onClick={toggleLanguage}
+              className="flex items-center text-sm text-gray-700 hover:text-primary-700"
+            >
+              <Globe size={16} className="mr-1" />
+              {language === "en" ? "EN | नेपाली" : "नेपाली | EN"}
+            </button>
+           
           </div>
 
           {/* Mobile menu button */}
