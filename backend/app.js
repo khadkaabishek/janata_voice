@@ -6,12 +6,14 @@ const rateLimit = require("express-rate-limit");
 const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
+
 const authRoutes = require("./src/Routes/authRoutes");
 const userRoutes = require("./src/Routes/userRoutes");
 const issueRoute = require("./src/Routes/issueRoute.js");
 const interactionRoute = require("./src/Routes/interactionRoute.js");
 const connectDB = require("./src/Utils/database");
 const kycRoutes = require("./src/Routes/kycRoutes");
+const { protect1, restrictTo } = require("./src/Middlewares/authMiddle.js"); // ✅ Fix here
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -25,7 +27,7 @@ if (!fs.existsSync(uploadDir)) {
 // Middleware
 app.use(
   cors({
-    origin: "http://localhost:5173", // Your React app URL
+    origin: "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -35,23 +37,19 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files publicly (so uploaded files can be accessed via URL)
+// Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 
 connectDB();
 
-const authMiddleware = (req, res, next) => {
-  if (!req.user) return res.status(401).json({ error: "Unauthorized" });
-  next();
-};
 // Routes
 app.use("/submitkyc", kycRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/issues", issueRoute);
-app.use("/api/interaction", authMiddleware, interactionRoute);
+app.use("/api/issue", protect1, issueRoute);              // ✅ Protected
+app.use("/api/interaction", protect1, interactionRoute);  // ✅ Protected
 
-// Health check endpoint
+// Health check
 app.get("/api/health", (req, res) => {
   res.status(200).json({
     status: "success",
@@ -60,7 +58,7 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Error handler (your own or default)
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ message: "Server error", error: err.message });

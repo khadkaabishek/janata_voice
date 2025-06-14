@@ -24,6 +24,8 @@ export type Issue = {
   reportedAt: string;
   images: string[];
   isAnonymous: boolean;
+  longitude?: number;
+  latitude?: number;
 };
 
 // User Types
