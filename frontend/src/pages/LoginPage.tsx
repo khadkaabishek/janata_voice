@@ -14,15 +14,13 @@ const LoginPage = () => { // Removed React.FC
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevent page reload
+    e.preventDefault(); // Prevent form default submission
     setIsLoading(true); // Show loading state
   
-    // Prepare JSON payload from form data
     const loginData = {
       email: email.trim(),
       password: password,
     };
-    console.log(loginData);
   
     try {
       const response = await fetch('http://localhost:5001/api/auth/login', {
@@ -30,27 +28,27 @@ const LoginPage = () => { // Removed React.FC
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(loginData), // Convert JS object to JSON
+        body: JSON.stringify(loginData),
       });
   
-      const data = await response.json(); // Convert response to JS object
+      const data = await response.json(); // Get response JSON
+      // console.log('Server response:', data);
   
       if (!response.ok) {
-        // Backend validation failed
         throw new Error(data.message || 'Login failed. Please try again.');
       }
+ 
+      localStorage.setItem('token', data.data.token); // Assumes response includes { token: '...' }
   
-      // ✅ Success - store token and redirect
-      localStorage.setItem('token', data.token); // Save token (optional)
-      navigate('/dashboard'); // Redirect after login
+      navigate('/dashboard'); 
   
     } catch (err: any) {
-      // ❌ Show error to user
-      alert(err.message);
+      alert(err.message || 'An unexpected error occurred.');
     } finally {
-      setIsLoading(false); // Stop loading spinner
+      setIsLoading(false); // Stop loading
     }
   };
+  
   
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

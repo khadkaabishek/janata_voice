@@ -15,7 +15,12 @@ const HomePage = () => {
   // Calculate stats
   const totalIssues = MOCK_WARD_PERFORMANCE.reduce((sum, ward) => sum + ward.totalIssues, 0);
   const resolvedIssues = MOCK_WARD_PERFORMANCE.reduce((sum, ward) => sum + ward.resolvedIssues, 0);
+   
+
   
+
+
+
   return (
     <div className="bg-background">
       {/* Hero Section */}
