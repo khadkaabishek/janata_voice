@@ -160,7 +160,7 @@ const RegisterPage: React.FC = () => {
                     className={`block w-full pl-10 pr-3 py-2 border ${
                       errors.name ? 'border-red-500' : 'border-gray-300'
                     } rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500`}
-                    placeholder="Abishek Khadka"
+                    placeholder="Your Name"
                   />
                 </div>
                 {errors.name && (
