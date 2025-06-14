@@ -7,6 +7,21 @@ import Button from '../components/ui/Button';
 import { MOCK_ISSUES } from '../data/mockData';
 import { Issue } from '../types';
 
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+// Fix for default Leaflet marker icons
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+});
+
 const IssuesPage: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [filteredIssues, setFilteredIssues] = useState<Issue[]>(MOCK_ISSUES);
@@ -14,7 +29,7 @@ const IssuesPage: React.FC = () => {
     return (searchParams.get('view') as 'grid' | 'list' | 'map') || 'grid';
   });
   const [isFilterVisible, setIsFilterVisible] = useState(true);
-  
+
   // Initialize filters from URL params or defaults
   const [filters, setFilters] = useState<FilterState>({
     search: searchParams.get('search') || '',
@@ -28,30 +43,30 @@ const IssuesPage: React.FC = () => {
   const wardFilter = searchParams.get('ward');
   const criticalFilter = searchParams.get('critical');
   const myReportsFilter = searchParams.get('my');
-  
+
   // Apply filters when they change
   useEffect(() => {
     let result = [...MOCK_ISSUES];
-    
+
     // Apply search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      result = result.filter(issue => 
-        issue.title.toLowerCase().includes(searchLower) || 
+      result = result.filter(issue =>
+        issue.title.toLowerCase().includes(searchLower) ||
         issue.description.toLowerCase().includes(searchLower)
       );
     }
-    
+
     // Apply category filter
     if (filters.category) {
       result = result.filter(issue => issue.category === filters.category);
     }
-    
+
     // Apply status filter
     if (filters.status) {
       result = result.filter(issue => issue.status === filters.status);
     }
-    
+
     // Apply ward filter from URL
     if (wardFilter) {
       result = result.filter(issue => issue.wardNumber === parseInt(wardFilter));
@@ -59,8 +74,8 @@ const IssuesPage: React.FC = () => {
 
     // Apply critical issues filter
     if (criticalFilter === 'true') {
-      result = result.filter(issue => 
-        issue.status === 'pending' && 
+      result = result.filter(issue =>
+        issue.status === 'pending' &&
         ['water', 'electricity', 'public-safety'].includes(issue.category)
       );
     }
@@ -69,7 +84,7 @@ const IssuesPage: React.FC = () => {
     if (myReportsFilter === 'true') {
       result = result.filter(issue => issue.reportedBy === 'user-1');
     }
-    
+
     // Apply sorting
     switch (filters.sortBy) {
       case 'votes':
@@ -89,18 +104,18 @@ const IssuesPage: React.FC = () => {
         });
         break;
     }
-    
+
     setFilteredIssues(result);
   }, [filters, wardFilter, criticalFilter, myReportsFilter]);
-  
+
   const handleFilterChange = (newFilters: FilterState) => {
     setFilters(newFilters);
   };
-  
+
   const toggleFilterVisibility = () => {
     setIsFilterVisible(!isFilterVisible);
   };
-  
+
   const toggleViewMode = () => {
     setViewMode(current => {
       if (current === 'grid') return 'list';
@@ -113,37 +128,63 @@ const IssuesPage: React.FC = () => {
     if (viewMode === 'map') {
       return (
         <div className="bg-white rounded-lg shadow-sm p-4 h-[calc(100vh-300px)] min-h-[500px]">
-          <div className="w-full h-full bg-gray-100 rounded-lg relative overflow-hidden">
-            <img 
-              src="https://images.pexels.com/photos/4386442/pexels-photo-4386442.jpeg"
-              alt="Kathmandu Map"
-              className="w-full h-full object-cover opacity-50"
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-white/90 p-6 rounded-lg shadow-lg text-center max-w-md">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Kathmandu Metropolitan City</h3>
-                <p className="text-gray-600">
-                  Interactive map showing issue locations would be displayed here.
-                  Each marker would represent an issue, colored by status.
-                </p>
-              </div>
-            </div>
-            {/* Mock issue markers */}
-            {filteredIssues.map((issue, index) => (
-              <div
-                key={issue.id}
-                className={`absolute w-3 h-3 rounded-full cursor-pointer transform -translate-x-1/2 -translate-y-1/2 ${
-                  issue.status === 'pending' ? 'bg-warning' :
-                  issue.status === 'in-progress' ? 'bg-primary-500' :
-                  'bg-success'
-                }`}
-                style={{
-                  top: `${30 + (index * 5)}%`,
-                  left: `${40 + (index * 3)}%`
-                }}
-                title={issue.title}
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: 12,
+              overflow: "hidden",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+            }}
+          >
+            <MapContainer
+              center={[27.7172, 85.324]}
+              zoom={13}
+              scrollWheelZoom={true}
+              style={{
+                width: "100%",
+                height: "100%",
+                minHeight: 400,
+                borderRadius: 12,
+                overflow: "hidden",
+              }}
+            >
+              <TileLayer
+                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-            ))}
+              {filteredIssues
+                .filter((issue) => issue.latitude && issue.longitude)
+                .map((issue) => (
+                  <Marker
+                    key={issue.id}
+                    position={[issue.latitude!, issue.longitude!]}
+                  >
+                    <Popup>
+                      <div className="min-w-[200px]">
+                        <h4 className="font-bold text-primary-700">{issue.title}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{issue.description}</p>
+                        <div className="mt-2 flex justify-between items-center">
+                          <span className="text-xs px-2 py-1 bg-gray-100 rounded-full">
+                            {issue.category ?? 'Uncategorized'}
+                          </span>
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full ${
+                              issue.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : issue.status === "in-progress"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-green-100 text-green-800"
+                            }`}
+                          >
+                            {issue.status}
+                          </span>
+                        </div>
+                      </div>
+                    </Popup>
+                  </Marker>
+                ))}
+            </MapContainer>
           </div>
         </div>
       );

@@ -10,6 +10,8 @@ export const MOCK_ISSUES: Issue[] = [
     status: 'pending',
     wardNumber: 1,
     location: 'Durbar Marg, near King\'s Way junction',
+    latitude: 27.7136,
+    longitude: 85.3188,
     votes: 24,
     reportedBy: 'user-1',
     reportedAt: '2025-04-15T10:30:00Z',
@@ -24,6 +26,8 @@ export const MOCK_ISSUES: Issue[] = [
     status: 'in-progress',
     wardNumber: 3,
     location: 'Thamel, near Fire Street',
+    latitude: 27.7154,
+    longitude: 85.3116,
     votes: 56,
     reportedBy: 'user-2',
     reportedAt: '2025-04-10T14:20:00Z',
@@ -38,6 +42,8 @@ export const MOCK_ISSUES: Issue[] = [
     status: 'in-progress',
     wardNumber: 2,
     location: 'Kamaladi Road, opposite Nepal Bank',
+    latitude: 27.7075,
+    longitude: 85.3222,
     votes: 38,
     reportedBy: 'user-3',
     reportedAt: '2025-04-08T09:15:00Z',
@@ -52,6 +58,8 @@ export const MOCK_ISSUES: Issue[] = [
     status: 'pending',
     wardNumber: 5,
     location: 'Kalimati residential area',
+    latitude: 27.7017,
+    longitude: 85.2970,
     votes: 87,
     reportedBy: 'user-4',
     reportedAt: '2025-04-14T11:45:00Z',
@@ -66,6 +74,8 @@ export const MOCK_ISSUES: Issue[] = [
     status: 'resolved',
     wardNumber: 4,
     location: 'Public School, Balaju',
+    latitude: 27.7284,
+    longitude: 85.3016,
     votes: 43,
     reportedBy: 'user-5',
     reportedAt: '2025-04-05T10:00:00Z',
@@ -80,6 +90,8 @@ export const MOCK_ISSUES: Issue[] = [
     status: 'pending',
     wardNumber: 3,
     location: 'New Road, near central junction',
+    latitude: 27.7058,
+    longitude: 85.3125,
     votes: 62,
     reportedBy: 'user-6',
     reportedAt: '2025-04-13T13:30:00Z',
@@ -87,6 +99,7 @@ export const MOCK_ISSUES: Issue[] = [
     isAnonymous: true
   }
 ];
+
 
 // Mock Users
 export const MOCK_USERS: User[] = [
