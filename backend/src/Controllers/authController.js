@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { validationResult } = require("express-validator");
-const User = require("../Models/User");
+const User = require("../Models/user");
 const { sendEmail } = require("../Utils/sendEmail");
 
 // Generate JWT Token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id }, process.env.JWT_SECRET || "abueburb#245", {
     expiresIn: process.env.JWT_EXPIRE || "7d",
   });
 };
@@ -15,13 +15,16 @@ const generateToken = (id) => {
 const sendTokenResponse = (user, statusCode, res, message = "Success") => {
   const token = generateToken(user._id);
 
+  // Set cookie options
+  // Use environment variable for cookie expiration or default to 7 days
   const options = {
     expires: new Date(
       Date.now() + (process.env.JWT_COOKIE_EXPIRE || 7) * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+   // In your cookie settings (authController.js)
+secure: process.env.NODE_ENV === 'production',
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   };
 
   res
@@ -40,7 +43,7 @@ const sendTokenResponse = (user, statusCode, res, message = "Success") => {
 // @desc    Register user
 // @route   POST /api/auth/register
 // @access  Public
-exports.register = async (req, res, next) => {
+exports.register = async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -52,7 +55,7 @@ exports.register = async (req, res, next) => {
     }
 
     const { name, email, password, address, agreeTerms } = req.body;
-    console.log(`Name = ${name} ,Email : ${email}`);
+    console.log(req.body);
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
       return res.status(400).json({
@@ -69,40 +72,11 @@ exports.register = async (req, res, next) => {
       agreeTerms,
     });
 
-    const verificationToken = user.generateVerificationToken();
     await user.save({ validateBeforeSave: false });
 
-    // FIXED: Added encodeURIComponent() for the token
-    const verificationUrl = `${req.protocol}://${req.get("host")}/api/auth/verify/${encodeURIComponent(verificationToken)}`;
+    // ✅ Automatically log in the user after registration
+    sendTokenResponse(user, 201, res, "User registered successfully");
 
-    const emailText = `Welcome to Janata Voice!\n\nPlease verify your email: ${verificationUrl}`;
-
-    try {
-      await sendEmail({
-        email: user.email,
-        subject: "Verify Your Janata Voice Account",
-        text: emailText,
-      });
-
-      res.status(201).json({
-        status: "success",
-        message:
-          "User registered successfully. Please check your email to verify your account.",
-        data: {
-          user: user.profile,
-        },
-      });
-    } catch (emailError) {
-      console.error("Email sending failed:", emailError);
-      res.status(201).json({
-        status: "success",
-        message:
-          "User registered successfully. Verification email could not be sent.",
-        data: {
-          user: user.profile,
-        },
-      });
-    }
   } catch (error) {
     console.error("Registration error:", error);
     res.status(500).json({
@@ -127,7 +101,7 @@ exports.login = async (req, res, next) => {
     }
 
     const { email, password } = req.body;
-
+    console.log(req.body);
     const user = await User.findByEmail(email).select("+password");
     if (!user) {
       return res.status(401).json({
@@ -203,7 +177,6 @@ exports.getMe = async (req, res) => {
 // @access  Public
 exports.verifyEmail = async (req, res) => {
   try {
-    // FIXED: Added decodeURIComponent() for the token
     const verificationToken = crypto
       .createHash("sha256")
       .update(decodeURIComponent(req.params.token))
@@ -256,9 +229,7 @@ exports.forgotPassword = async (req, res) => {
     const resetToken = user.generateResetToken();
     await user.save({ validateBeforeSave: false });
 
-    // FIXED: Added encodeURIComponent() for the token
     const resetUrl = `${req.protocol}://${req.get("host")}/api/auth/reset-password/${encodeURIComponent(resetToken)}`;
-
     const emailText = `Password reset link: ${resetUrl}`;
 
     try {
@@ -296,7 +267,6 @@ exports.forgotPassword = async (req, res) => {
 // @access  Public
 exports.resetPassword = async (req, res) => {
   try {
-    // FIXED: Added decodeURIComponent() for the token
     const resetPasswordToken = crypto
       .createHash("sha256")
       .update(decodeURIComponent(req.params.resettoken))
