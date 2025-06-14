@@ -7,10 +7,8 @@ import {
   BarChart3, 
   Settings,
   Menu,
-  X,
-  Bell
+  X
 } from 'lucide-react';
-import NotificationDropdown from './NotificationDropdown';
 
 interface SidebarProps {
   activeTab: string;
@@ -36,18 +34,14 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <>
-      {/* Mobile header */}
-      <div className="lg:hidden bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between relative z-30">
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-          <h1 className="text-xl font-bold text-blue-600">Janata Voice</h1>
-        </div>
-        <NotificationDropdown />
+      {/* Mobile toggle button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className="p-2 rounded-md bg-white shadow-md text-gray-700 hover:text-gray-900 focus:outline-none"
+        >
+          <Menu className="h-6 w-6" />
+        </button>
       </div>
 
       {/* Mobile overlay */}
@@ -73,17 +67,15 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       )}
 
-      {/* Desktop sidebar */}
-      <div className="hidden lg:flex lg:flex-shrink-0">
-        <div className="flex flex-col w-64 bg-white border-r border-gray-200 relative">
-          <SidebarContent 
-            menuItems={menuItems} 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab}
-            setSidebarOpen={setSidebarOpen}
-            isDesktop={true}
-          />
-        </div>
+      {/* Desktop sidebar - Fixed position */}
+      <div className="hidden lg:block fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200 z-30">
+        <SidebarContent 
+          menuItems={menuItems} 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab}
+          setSidebarOpen={setSidebarOpen}
+          isDesktop={true}
+        />
       </div>
     </>
   );
@@ -106,22 +98,6 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
 }) => {
   return (
     <div className="flex flex-col h-full">
-      {/* Logo */}
-      <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 relative">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <LayoutDashboard className="h-5 w-5 text-white" />
-          </div>
-          <h1 className="text-xl font-bold text-gray-900">Janata Voice</h1>
-        </div>
-        {isDesktop && (
-          <div className="relative z-50">
-            <NotificationDropdown />
-          </div>
-        )}
-      </div>
-
-      {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -146,19 +122,6 @@ const SidebarContent: React.FC<SidebarContentProps> = ({
           );
         })}
       </nav>
-
-      {/* User info */}
-      <div className="px-4 py-4 border-t border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-            <span className="text-sm font-medium text-gray-700">MR</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">Mayor Ram Shrestha</p>
-            <p className="text-xs text-gray-500 truncate">Kathmandu Municipality</p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
