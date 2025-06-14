@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { useState, useEffect } from "react";
-=======
 import React, { useState, useEffect } from "react";
->>>>>>> main
 import { useSearchParams } from "react-router-dom";
 import { Layout, ListFilter, Map as MapIcon } from "lucide-react";
 import IssueCard from "../components/issues/IssueCard";
