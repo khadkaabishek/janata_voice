@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
-import User from "../Models/user.js"; // Assuming you have a User model to fetch user details
+const jwt = require( "jsonwebtoken");
+const User = require("../Models/user.js"); // Assuming you have a User model to fetch user details
 
 export const protect1 = async (req, res, next) => {
   let token;
