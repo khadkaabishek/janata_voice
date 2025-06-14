@@ -75,7 +75,6 @@ export const fetchIssues = async (filters: {
   critical?: boolean;
   myReports?: boolean;
 }): Promise<Issue[]> => {
-  // Construct query parameters
   const params = new URLSearchParams();
   if (filters.search) params.append('search', filters.search);
   if (filters.category) params.append('category', filters.category);

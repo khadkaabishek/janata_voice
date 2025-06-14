@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const upload = require("./../Middlewares/uploadMiddleware");
 const { createIssue } = require("../controllers/issueController");
-
+const  getIssues  = require("./../Controllers/getIssue");
 router.post(
   "/create",
   upload.fields([
@@ -11,5 +11,6 @@ router.post(
   ]),
   createIssue
 );
+router.get("/get", getIssues);
 
 module.exports = router;
