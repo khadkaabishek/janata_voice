@@ -17,6 +17,7 @@ const RegisterPage = lazy(() => import("./pages/RegisterPage"));
 const ReportIssuePage = lazy(() => import("./pages/ReportIssuePage"));
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminSettingsPage = lazy(() => import("./components/admin/Settings"));
 
 // Loading component
 import LoadingSpinner from "./components/ui/LoadingSpinner";
@@ -32,6 +33,7 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
           <Route path="admin" element={<Admin />} />
+          <Route path="/admin/settings" element={<AdminSettingsPage />} />
         </Route>
 
         {/* Dashboard routes */}
