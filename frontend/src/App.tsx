@@ -20,30 +20,10 @@ const Admin = lazy(() => import("./pages/Admin"));
 const AdminSettingsPage = lazy(() => import("./components/admin/Settings"));
 
 // Loading component
-<<<<<<< HEAD
-import LoadingSpinner from './components/ui/LoadingSpinner';
 import KYCForm from './pages/kycForm';
-=======
 import LoadingSpinner from "./components/ui/LoadingSpinner";
->>>>>>> arpan
 
 function App() {
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
@@ -57,14 +37,9 @@ function App() {
           <Route path="admin" element={<Admin />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
         </Route>
-<<<<<<< HEAD
-        
-        <Route path="/dashboard" element={<DashboardLayout />}>
-=======
 
         {/* Dashboard routes */}
         <Route path="dashboard" element={<DashboardLayout />}>
->>>>>>> arpan
           <Route path="issues" element={<IssuesPage />} />
           <Route path="report" element={<ReportIssuePage />} />
           <Route path="discussion" element={<DiscussionPage />} />
