@@ -26,6 +26,7 @@ export type Issue = {
   isAnonymous: boolean;
   longitude?: number;
   latitude?: number;
+  submittedBY?:string;
 };
 
 // User Types
