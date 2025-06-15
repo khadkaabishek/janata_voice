@@ -1,56 +1,48 @@
 const BASE_URL = "http://localhost:5001"; 
-export const postIssue = async (issueData: {
+export async function postIssue(data: {
   title: string;
   description: string;
-  images: File[];
-  location: string;
-  isAnonymous: boolean;
-  audioBlob: Blob | null;
-  ward: number;
   category: string;
+  location: string;
+  ward: number;
+  isAnonymous: boolean;
   latitude?: number;
   longitude?: number;
-}) => {
+  images: File[];
+  audioBlob?: Blob | null;
+}) {
   const formData = new FormData();
-  
-  // Append basic fields
-  formData.append('title', issueData.title);
-  formData.append('description', issueData.description);
-  formData.append('location', issueData.location);
-  formData.append('isAnonymous', String(issueData.isAnonymous));
-  formData.append('ward', String(issueData.ward));
-  formData.append('category', issueData.category);
+  formData.append('title', data.title);
+  formData.append('description', data.description);
+  formData.append('category', data.category);
+  formData.append('location', data.location);
+  formData.append('ward', String(data.ward));
+  formData.append('isAnonymous', String(data.isAnonymous));
+  if (data.latitude) formData.append('latitude', String(data.latitude));
+  if (data.longitude) formData.append('longitude', String(data.longitude));
 
-  // Append geolocation if available
-  if (issueData.latitude) formData.append('latitude', String(issueData.latitude));
-  if (issueData.longitude) formData.append('longitude', String(issueData.longitude));
-
-  // Append images
-  issueData.images.forEach((image) => {
+  data.images.forEach((image) => {
     formData.append('images', image);
   });
 
-  // Append audio if exists
-  if (issueData.audioBlob) {
-    formData.append('audio', issueData.audioBlob, 'voice-description.webm');
+  if (data.audioBlob) {
+    formData.append('audio', data.audioBlob, 'voice-note.webm');
   }
 
-  const response = await fetch(`${ BASE_URL }/api/issues`, {
+  const response = await fetch('http://localhost:5001/api/issue/create', {
     method: 'POST',
     body: formData,
-    credentials: 'include', // if you need to send cookies
-    headers: {
-      'Accept': 'application/json',
-    },
   });
 
+  const result = await response.json();
+
   if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || 'Failed to submit issue');
+    throw new Error(result.message || 'Failed to submit issue');
   }
 
-  return response.json();
-};
+  return result;
+}
+
 export interface Issue {
   id: string;
   title: string;
@@ -75,6 +67,7 @@ export const fetchIssues = async (filters: {
   critical?: boolean;
   myReports?: boolean;
 }): Promise<Issue[]> => {
+  // Construct query parameters
   const params = new URLSearchParams();
   if (filters.search) params.append('search', filters.search);
   if (filters.category) params.append('category', filters.category);

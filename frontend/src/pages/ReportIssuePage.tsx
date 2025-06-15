@@ -102,7 +102,6 @@ const ReportIssuePage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
-    // Basic validation
     if (!title || !description || images.length === 0) {
       setErrors({ form: 'Please fill all required fields and upload at least one image' });
       return;
@@ -112,35 +111,18 @@ const ReportIssuePage: React.FC = () => {
     setErrors({});
   
     try {
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('description', description);
-      formData.append('category', category);
-      formData.append('location', location);
-      formData.append('ward', String(wardNumber));
-      formData.append('isAnonymous', String(isAnonymous));
-      if (geoLocation.latitude) formData.append('latitude', String(geoLocation.latitude));
-      if (geoLocation.longitude) formData.append('longitude', String(geoLocation.longitude));
-  
-      images.forEach((image, index) => {
-        formData.append('images', image); // Must match backend field name
+      const result = await postIssue({
+        title,
+        description,
+        category,
+        location,
+        ward: wardNumber,
+        isAnonymous,
+        latitude: geoLocation.latitude,
+        longitude: geoLocation.longitude,
+        images,
+        audioBlob,
       });
-      console.log(formData);
-  
-      if (audioBlob) {
-        formData.append('audio', audioBlob, 'voice-note.webm'); // Match backend expected name
-      }
-  
-      const response = await fetch('http://localhost:5001/api/issue/create', {
-        method: 'POST',
-        body: formData,
-      });
-  
-      const result = await response.json();
-  
-      if (!response.ok) {
-        throw new Error(result.message || 'Failed to submit issue');
-      }
   
       setIsSuccess(true);
       resetForm();
