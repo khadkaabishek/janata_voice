@@ -106,7 +106,7 @@ const ReportIssuePage: React.FC = () => {
       setErrors({ form: 'Please fill all required fields and upload at least one image' });
       return;
     }
-  
+  const currName = localStorage.getItem('currName');
     setIsSubmitting(true);
     setErrors({});
   
@@ -122,6 +122,7 @@ const ReportIssuePage: React.FC = () => {
         longitude: geoLocation.longitude,
         images,
         audioBlob,
+        currName,
       });
   
       setIsSuccess(true);

@@ -14,6 +14,7 @@ const createIssue = async (req, res) => {
       isAnonymous,
       latitude,
       longitude,
+      currName,
     } = req.body;
 
     // ✅ Save only the public-facing relative paths for images
@@ -31,7 +32,7 @@ const createIssue = async (req, res) => {
         .status(400)
         .json({ message: "At least one image is required." });
     }
-
+    // const setName = localStorage.getItem(name);
     const newIssue = new Issue({
       title,
       description,
@@ -44,6 +45,7 @@ const createIssue = async (req, res) => {
       latitude,
       longitude,
       status: "pending",
+      submittedBY: currName,
     });
 
     await newIssue.save();

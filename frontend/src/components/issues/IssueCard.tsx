@@ -82,7 +82,7 @@ const IssueCard: React.FC<IssueCardProps> = ({ issue, onClick }) => {
           </div>
         </div>
         <div className="text-sm text-gray-500">
-          {issue.isAnonymous ? 'Anonymous' : `By ${issue.reportedBy}`}
+          {issue.isAnonymous ? 'Anonymous' : `By ${issue.submittedBY}`}
         </div>
       </CardFooter>
     </Card>

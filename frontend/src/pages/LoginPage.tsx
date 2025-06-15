@@ -18,7 +18,7 @@ const LoginPage = () => { // Removed React.FC
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent form default submission
     setIsLoading(true); // Show loading state
-  
+    
     const loginData = {
       email: email.trim(),
       password: password,
@@ -32,7 +32,7 @@ const LoginPage = () => { // Removed React.FC
         },
         body: JSON.stringify(loginData),
       });
-  
+      
       const data = await response.json(); // Get response JSON
       console.log('Server response:', data);
   
@@ -41,7 +41,7 @@ const LoginPage = () => { // Removed React.FC
       }
       login();
       localStorage.setItem('token', data.data.token); // Assumes response includes { token: '...' }
-     
+      localStorage.setItem('currName',data.data.user.name);
       navigate('/dashboard/issues'); 
   
     } catch (err: any) {

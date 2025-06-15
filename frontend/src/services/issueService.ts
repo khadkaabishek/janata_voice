@@ -10,6 +10,7 @@ export async function postIssue(data: {
   longitude?: number;
   images: File[];
   audioBlob?: Blob | null;
+  currName:string,
 }) {
   const formData = new FormData();
   formData.append('title', data.title);
@@ -18,9 +19,11 @@ export async function postIssue(data: {
   formData.append('location', data.location);
   formData.append('ward', String(data.ward));
   formData.append('isAnonymous', String(data.isAnonymous));
+  formData.append('currName', String(data.currName));
+
   if (data.latitude) formData.append('latitude', String(data.latitude));
   if (data.longitude) formData.append('longitude', String(data.longitude));
-
+    console.log(formData.currName);
   data.images.forEach((image) => {
     formData.append('images', image);
   });
