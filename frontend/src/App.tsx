@@ -20,13 +20,8 @@ const Admin = lazy(() => import("./pages/Admin"));
 const AdminSettingsPage = lazy(() => import("./components/admin/Settings"));
 
 // Loading component
-<<<<<<< HEAD
-import LoadingSpinner from './components/ui/LoadingSpinner';
-import KYCForm from './pages/kycForm';
-=======
 import KYCForm from './pages/kycForm';
 import LoadingSpinner from "./components/ui/LoadingSpinner";
->>>>>>> d1f1d41d90fd7dcc1e147bffafe2bf58b58fa155
 
 function App() {
   return (
@@ -42,14 +37,9 @@ function App() {
           <Route path="admin" element={<Admin />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
         </Route>
-<<<<<<< HEAD
-        
-        <Route path="/dashboard" element={<DashboardLayout />}>
-=======
 
         {/* Dashboard routes */}
         <Route path="dashboard" element={<DashboardLayout />}>
->>>>>>> d1f1d41d90fd7dcc1e147bffafe2bf58b58fa155
           <Route path="issues" element={<IssuesPage />} />
           <Route path="report" element={<ReportIssuePage />} />
           <Route path="discussion" element={<DiscussionPage />} />
