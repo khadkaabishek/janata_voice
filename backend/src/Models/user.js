@@ -160,6 +160,10 @@ userSchema.methods.updateLastLogin = function () {
   this.lastLogin = new Date();
   return this.save({ validateBeforeSave: false });
 };
+// // Add avatar virtual
+// userSchema.virtual('avatar').get(function() {
+//   return this.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(this.name)}`;
+// });
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 module.exports = User;

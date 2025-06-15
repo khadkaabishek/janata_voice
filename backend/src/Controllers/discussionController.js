@@ -1,6 +1,9 @@
 const Discussion = require('../Models/discussion');
 const User = require('../Models/user');
 
+// Use a default ObjectId string for testing (replace with a real User _id if needed)
+const DEFAULT_USER_ID = '664e5f1a2b5e4b0012e9b123';
+
 // Get all discussions by type
 const getDiscussionsByType = async (req, res) => {
   const { type } = req.params;
@@ -25,17 +28,16 @@ const getDiscussionsByType = async (req, res) => {
 const createComment = async (req, res) => {
   const { content, type } = req.body;
 
-  if (!content || !type || !req.user._Id) {
+  if (!content || !type) {
     return res.status(400).json({ message: 'Missing fields' });
   }
+  // Use authenticated user if available, otherwise fallback to default
+  const userId = req.user && req.user._Id ? req.user._Id : DEFAULT_USER_ID;
 
   try {
-    const user = req.user._Id;
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
     const newComment = new Discussion({
       content,
-      commentedBy: req.user._Id,
+      commentedBy: userId,
       type
     });
 
@@ -52,30 +54,30 @@ const createComment = async (req, res) => {
 };
 
 // Add a reply to a comment
- const addReply = async (req, res) => {
+const addReply = async (req, res) => {
   const { id } = req.params;
   const { content } = req.body;
 
-  if (!content ) {
-    return res.status(400).json({ message: 'Content and userId are required' });
+  if (!content) {
+    return res.status(400).json({ message: 'Content is required' });
   }
+  // Use authenticated user if available, otherwise fallback to default
+  const userId = req.user && req.user._Id ? req.user._Id : DEFAULT_USER_ID;
 
   try {
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
     const updated = await Discussion.findByIdAndUpdate(
       id,
       {
         $push: {
           replies: {
             content,
-            repliedBy: req.user._userId
+            repliedBy: userId
           }
         }
       },
       { new: true }
-    ).populate('replies.repliedBy', 'name role avatar');
+    ).populate('commentedBy', 'name role avatar')
+     .populate('replies.repliedBy', 'name role avatar');
 
     if (!updated) {
       return res.status(404).json({ message: 'Discussion not found' });
@@ -86,6 +88,7 @@ const createComment = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
 module.exports = {
   getDiscussionsByType,
   createComment,
