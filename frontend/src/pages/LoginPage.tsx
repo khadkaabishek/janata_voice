@@ -34,14 +34,14 @@ const LoginPage = () => { // Removed React.FC
       });
   
       const data = await response.json(); // Get response JSON
-      // console.log('Server response:', data);
+      console.log('Server response:', data);
   
       if (!response.ok) {
         throw new Error(data.message || 'Login failed. Please try again.');
       }
       login();
       localStorage.setItem('token', data.data.token); // Assumes response includes { token: '...' }
-  
+     
       navigate('/dashboard/issues'); 
   
     } catch (err: any) {
