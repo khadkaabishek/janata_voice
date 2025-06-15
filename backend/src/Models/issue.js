@@ -72,15 +72,13 @@ const issueSchema = new mongoose.Schema(
       required: [true, "status is required"],
       enum: ["pending", "in-progress", "resolved"],
     },
-
-    // ✅ User reference
     submittedBY: {
       type: String,
-      // ref: "User",
       required: true,
     },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Issue", issueSchema);
+// ✅ This prevents OverwriteModelError on hot reloads
+module.exports = mongoose.models.Issue || mongoose.model("Issue", issueSchema);
