@@ -1,9 +1,6 @@
 const Discussion = require('../Models/discussion');
 const User = require('../Models/user');
 
-// Use a default ObjectId string for testing (replace with a real User _id if needed)
-const DEFAULT_USER_ID = '664e5f1a2b5e4b0012e9b123';
-
 // Get all discussions by type
 const getDiscussionsByType = async (req, res) => {
   const { type } = req.params;
@@ -20,6 +17,7 @@ const getDiscussionsByType = async (req, res) => {
 
     res.json(discussions);
   } catch (err) {
+    console.error('Error fetching discussions:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -31,10 +29,21 @@ const createComment = async (req, res) => {
   if (!content || !type) {
     return res.status(400).json({ message: 'Missing fields' });
   }
-  // Use authenticated user if available, otherwise fallback to default
-  const userId = req.user && req.user._Id ? req.user._Id : DEFAULT_USER_ID;
+
+  // Check if user is authenticated
+  if (!req.user || !req.user._id) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+
+  const userId = req.user._id; // Fixed: was _Id, should be _id
 
   try {
+    // Verify user exists
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     const newComment = new Discussion({
       content,
       commentedBy: userId,
@@ -47,8 +56,11 @@ const createComment = async (req, res) => {
     const populatedComment = await Discussion.findById(newComment._id)
       .populate('commentedBy', 'name role avatar');
 
+    console.log('Created comment:', populatedComment); // Debug log
+
     res.status(201).json(populatedComment);
   } catch (err) {
+    console.error('Error creating comment:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -61,10 +73,21 @@ const addReply = async (req, res) => {
   if (!content) {
     return res.status(400).json({ message: 'Content is required' });
   }
-  // Use authenticated user if available, otherwise fallback to default
-  const userId = req.user && req.user._Id ? req.user._Id : DEFAULT_USER_ID;
+
+  // Check if user is authenticated
+  if (!req.user || !req.user._id) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+
+  const userId = req.user._id; // Fixed: was _Id, should be _id
 
   try {
+    // Verify user exists
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
     const updated = await Discussion.findByIdAndUpdate(
       id,
       {
@@ -83,8 +106,11 @@ const addReply = async (req, res) => {
       return res.status(404).json({ message: 'Discussion not found' });
     }
 
+    console.log('Added reply to discussion:', updated); // Debug log
+
     res.json(updated);
   } catch (err) {
+    console.error('Error adding reply:', err);
     res.status(500).json({ message: err.message });
   }
 };
