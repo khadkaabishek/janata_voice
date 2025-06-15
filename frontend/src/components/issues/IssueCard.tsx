@@ -15,54 +15,66 @@ const IssueCard: React.FC<IssueCardProps> = ({ issue, onClick }) => {
   const { status, category } = issue;
   const statusConfig = ISSUE_STATUSES[status];
   const categoryConfig = ISSUE_CATEGORIES[category];
-  
-  // Get status color from config
+
   const getStatusVariant = () => {
-    switch (statusConfig.color) {
-      case 'success': return 'success';
-      case 'warning': return 'warning';
-      case 'primary-500': return 'primary';
-      default: return 'danger';
+    switch (statusConfig?.color) {
+      case 'success':
+        return 'success';
+      case 'warning':
+        return 'warning';
+      case 'primary-500':
+        return 'primary';
+      default:
+        return 'danger';
     }
   };
 
   return (
     <Card onClick={onClick} hoverable className="h-full">
       <div className="relative h-40 overflow-hidden">
-        <img 
-          src={issue.images[0] || 'https://images.pexels.com/photos/5178060/pexels-photo-5178060.jpeg'} 
-          alt={issue.title}
-          className="w-full h-full object-cover"
-        />
+      <img
+  src={
+    issue.images?.[0]
+      ? `http://localhost:5000/uploads/${issue.images[0].split('/').pop()}`
+      : 'https://images.pexels.com/photos/5178060/pexels-photo-5178060.jpeg'
+  }
+  alt={issue.title || 'Issue image'}
+  className="w-full h-full object-cover"
+/>
+
         <div className="absolute top-2 right-2 flex space-x-2">
           <Badge variant={getStatusVariant()}>
-            {statusConfig.label}
+            {statusConfig?.label || 'Unknown'}
           </Badge>
         </div>
       </div>
-      
+
       <CardContent>
         <div className="flex items-start justify-between mb-2">
           <Badge variant="default" className="bg-gray-100">
             Ward {issue.wardNumber}
           </Badge>
-          <Badge variant="primary">
-            {categoryConfig.label}
-          </Badge>
+          {categoryConfig ? (
+            <Badge variant="primary">{categoryConfig.label}</Badge>
+          ) : (
+            <Badge variant="default">Unknown Category</Badge>
+          )}
         </div>
-        
-        <h3 className="text-lg font-semibold mb-2 line-clamp-2">{issue.title}</h3>
-        
+
+        <h3 className="text-lg font-semibold mb-2 line-clamp-2">
+          {issue.title}
+        </h3>
+
         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
           {issue.description}
         </p>
-        
+
         <div className="flex items-center text-sm text-gray-500">
           <Clock size={14} className="mr-1" />
           <span>{formatDate(issue.reportedAt)}</span>
         </div>
       </CardContent>
-      
+
       <CardFooter className="flex justify-between items-center">
         <div className="flex items-center space-x-4">
           <button className="flex items-center text-gray-600 hover:text-primary-600">
@@ -75,7 +87,7 @@ const IssueCard: React.FC<IssueCardProps> = ({ issue, onClick }) => {
           </div>
         </div>
         <div className="text-sm text-gray-500">
-          {issue.isAnonymous ? 'Anonymous' : 'By ' + issue.reportedBy}
+          {issue.isAnonymous ? 'Anonymous' : `By ${issue.reportedBy}`}
         </div>
       </CardFooter>
     </Card>
