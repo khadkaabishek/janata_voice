@@ -1,13 +1,8 @@
 import React from 'react';
-import { Search, Filter, SortDesc } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { IssueCategory, IssueStatus } from '../../types';
 import { ISSUE_CATEGORIES, ISSUE_STATUSES } from '../../data/mockData';
 import Button from '../ui/Button';
-
-type IssueFilterProps = {
-  onFilterChange: (filters: FilterState) => void;
-  activeFilters: FilterState;
-};
 
 export type FilterState = {
   search: string;
@@ -17,23 +12,22 @@ export type FilterState = {
   sortBy: 'votes' | 'date' | 'status';
 };
 
+type IssueFilterProps = {
+  onFilterChange: (filters: FilterState) => void;
+  activeFilters: FilterState;
+};
+
 const IssueFilter: React.FC<IssueFilterProps> = ({ onFilterChange, activeFilters }) => {
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onFilterChange({ ...activeFilters, search: e.target.value });
   };
 
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onFilterChange({ 
-      ...activeFilters, 
-      category: e.target.value as IssueCategory | '' 
-    });
+    onFilterChange({ ...activeFilters, category: e.target.value as IssueCategory | '' });
   };
 
   const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onFilterChange({ 
-      ...activeFilters, 
-      status: e.target.value as IssueStatus | '' 
-    });
+    onFilterChange({ ...activeFilters, status: e.target.value as IssueStatus | '' });
   };
 
   const handleWardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -42,10 +36,7 @@ const IssueFilter: React.FC<IssueFilterProps> = ({ onFilterChange, activeFilters
   };
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onFilterChange({ 
-      ...activeFilters, 
-      sortBy: e.target.value as 'votes' | 'date' | 'status' 
-    });
+    onFilterChange({ ...activeFilters, sortBy: e.target.value as 'votes' | 'date' | 'status' });
   };
 
   const resetFilters = () => {
@@ -77,69 +68,55 @@ const IssueFilter: React.FC<IssueFilterProps> = ({ onFilterChange, activeFilters
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-            Category
-          </label>
+          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">Category</label>
           <select
             id="category"
-            className="block w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="block w-full py-2 px-3 border border-gray-300 rounded-md"
             value={activeFilters.category}
             onChange={handleCategoryChange}
           >
             <option value="">All Categories</option>
             {Object.entries(ISSUE_CATEGORIES).map(([value, { label }]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
+              <option key={value} value={value}>{label}</option>
             ))}
           </select>
         </div>
 
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-            Status
-          </label>
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
           <select
             id="status"
-            className="block w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="block w-full py-2 px-3 border border-gray-300 rounded-md"
             value={activeFilters.status}
             onChange={handleStatusChange}
           >
             <option value="">All Statuses</option>
             {Object.entries(ISSUE_STATUSES).map(([value, { label }]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
+              <option key={value} value={value}>{label}</option>
             ))}
           </select>
         </div>
 
         <div>
-          <label htmlFor="ward" className="block text-sm font-medium text-gray-700 mb-1">
-            Ward
-          </label>
+          <label htmlFor="ward" className="block text-sm font-medium text-gray-700 mb-1">Ward</label>
           <select
             id="ward"
-            className="block w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="block w-full py-2 px-3 border border-gray-300 rounded-md"
             value={activeFilters.ward === null ? '' : activeFilters.ward.toString()}
             onChange={handleWardChange}
           >
             <option value="">All Wards</option>
             {Array.from({ length: 10 }, (_, i) => i + 1).map((ward) => (
-              <option key={ward} value={ward.toString()}>
-                Ward {ward}
-              </option>
+              <option key={ward} value={ward.toString()}>Ward {ward}</option>
             ))}
           </select>
         </div>
 
         <div>
-          <label htmlFor="sortBy" className="block text-sm font-medium text-gray-700 mb-1">
-            Sort By
-          </label>
+          <label htmlFor="sortBy" className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
           <select
             id="sortBy"
-            className="block w-full py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="block w-full py-2 px-3 border border-gray-300 rounded-md"
             value={activeFilters.sortBy}
             onChange={handleSortChange}
           >
@@ -150,11 +127,7 @@ const IssueFilter: React.FC<IssueFilterProps> = ({ onFilterChange, activeFilters
         </div>
 
         <div className="flex items-end">
-          <Button
-            variant="secondary"
-            onClick={resetFilters}
-            className="w-full"
-          >
+          <Button variant="secondary" onClick={resetFilters} className="w-full">
             Reset Filters
           </Button>
         </div>

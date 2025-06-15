@@ -14,8 +14,8 @@ const Verifications: React.FC = () => {
       citizenshipNumber: '12-34-56-78901',
       submissionDate: '2024-01-15',
       status: 'pending',
-      citizenshipImage: 'https://images.pexels.com/photos/3979767/pexels-photo-3979767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      profileImage: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      citizenshipImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXWuRTk8r-LqBif5z4W7iGVawhX4I9EQ-QLg&s',
+      profileImage: 'https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg'
     },
     {
       id: 2,
@@ -25,8 +25,8 @@ const Verifications: React.FC = () => {
       citizenshipNumber: '23-45-67-89012',
       submissionDate: '2024-01-14',
       status: 'pending',
-      citizenshipImage: 'https://images.pexels.com/photos/3979767/pexels-photo-3979767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      profileImage: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      citizenshipImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXWuRTk8r-LqBif5z4W7iGVawhX4I9EQ-QLg&s',
+      profileImage: 'https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg'
     },
     {
       id: 3,
@@ -36,8 +36,8 @@ const Verifications: React.FC = () => {
       citizenshipNumber: '34-56-78-90123',
       submissionDate: '2024-01-13',
       status: 'approved',
-      citizenshipImage: 'https://images.pexels.com/photos/3979767/pexels-photo-3979767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      profileImage: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      citizenshipImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXWuRTk8r-LqBif5z4W7iGVawhX4I9EQ-QLg&s',
+      profileImage: 'https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg'
     },
     {
       id: 4,
@@ -47,8 +47,8 @@ const Verifications: React.FC = () => {
       citizenshipNumber: '45-67-89-01234',
       submissionDate: '2024-01-12',
       status: 'rejected',
-      citizenshipImage: 'https://images.pexels.com/photos/3979767/pexels-photo-3979767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      profileImage: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      citizenshipImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXWuRTk8r-LqBif5z4W7iGVawhX4I9EQ-QLg&s',
+      profileImage: 'https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg'
     },
     {
       id: 5,
@@ -58,8 +58,8 @@ const Verifications: React.FC = () => {
       citizenshipNumber: '56-78-90-12345',
       submissionDate: '2024-01-11',
       status: 'pending',
-      citizenshipImage: 'https://images.pexels.com/photos/3979767/pexels-photo-3979767.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-      profileImage: 'https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
+      citizenshipImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXWuRTk8r-LqBif5z4W7iGVawhX4I9EQ-QLg&s',
+      profileImage: 'https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg'
     }
   ];
 

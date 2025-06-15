@@ -46,7 +46,7 @@ connectDB();
 app.use("/submitkyc", kycRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/issue", protect1, issueRoute);              // ✅ Protected
+app.use("/api/issue", issueRoute);              // ✅ Protected
 app.use("/api/interaction", protect1, interactionRoute);  // ✅ Protected
 
 // Health check
