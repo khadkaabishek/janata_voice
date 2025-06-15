@@ -1,7 +1,9 @@
+const path = require("path");
 const Issue = require("../Models/issue");
 
 const createIssue = async (req, res) => {
   console.log(req.body);
+
   try {
     const {
       title,
@@ -14,10 +16,16 @@ const createIssue = async (req, res) => {
       longitude,
     } = req.body;
 
-    const imagePaths = req.files?.images?.map((file) => file.path) || [];
-    const audioPath = req.files?.audio?.[0]?.path || null;
+    // ✅ Save only the public-facing relative paths for images
+    const imagePaths =
+      req.files?.images?.map((file) => `/uploads/${file.filename}`) || [];
 
-    // Validate required images
+    // ✅ Save only the public-facing path for audio (if any)
+    const audioPath = req.files?.audio?.[0]
+      ? `/uploads/${req.files.audio[0].filename}`
+      : null;
+
+    // ✅ Require at least one image
     if (imagePaths.length === 0) {
       return res
         .status(400)
@@ -29,13 +37,13 @@ const createIssue = async (req, res) => {
       description,
       category,
       location,
-      ward: `ward${ward}`, // Convert "5" to "ward5"
+      ward: `ward${ward}`,
       isAnonymous: isAnonymous === "true",
       images: imagePaths,
       audio: audioPath,
       latitude,
       longitude,
-      status: "pending", // default status
+      status: "pending",
     });
 
     await newIssue.save();

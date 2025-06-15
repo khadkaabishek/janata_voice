@@ -32,15 +32,10 @@ const IssueCard: React.FC<IssueCardProps> = ({ issue, onClick }) => {
   return (
     <Card onClick={onClick} hoverable className="h-full">
       <div className="relative h-40 overflow-hidden">
-      <img
-  src={
-    issue.images?.[0]
-      ? `http://localhost:5000/uploads/${issue.images[0].split('/').pop()}`
-      : 'https://images.pexels.com/photos/5178060/pexels-photo-5178060.jpeg'
-  }
-  alt={issue.title || 'Issue image'}
-  className="w-full h-full object-cover"
-/>
+      <img src={`http://localhost:5001${issue.images[0]}`} alt="Issue Image" />
+
+  
+{/* /> */}
 
         <div className="absolute top-2 right-2 flex space-x-2">
           <Badge variant={getStatusVariant()}>
