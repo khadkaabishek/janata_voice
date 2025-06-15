@@ -9,7 +9,7 @@ const Navbar: React.FC = () => {
 
 
   const { isLoggedIn,verify } = useAuth();
-console.log(isLoggedIn);
+// console.log(isLoggedIn);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { language, setLanguage, translations } = useLanguage();
   const location = useLocation();
@@ -103,17 +103,32 @@ console.log(isLoggedIn);
             ) : (
               // Regular login/register buttons
               <>
-                <Link to="/login">
-                  <Button variant="secondary" size="sm" icon={<LogIn size={16} />}>
-                    {translations["nav.login"]}
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button variant="primary" size="sm" icon={<User size={16} />}>
-                    {translations["nav.register"]}
-                  </Button>
-                </Link>
-              </>
+  {!isLoggedIn ? (
+    <>
+      <Link to="/login">
+        <Button variant="secondary" size="sm" icon={<LogIn size={16} />}>
+          {translations["nav.login"]}
+        </Button>
+      </Link>
+      <Link to="/register">
+        <Button variant="primary" size="sm" icon={<User size={16} />}>
+          {translations["nav.register"]}
+        </Button>
+      </Link>
+    </>
+  ) : verify ? (
+    <Button variant="outline" size="sm" disabled>
+      {translations["nav.pending"] || "Pending"}
+    </Button>
+  ) : (
+    <Link to="/kyc">
+      <Button variant="secondary" size="sm" icon={<LogIn size={16} />}>
+        {translations["nav.verify"] || "Verify"}
+      </Button>
+    </Link>
+  )}
+</>
+
             )}
           </div>
 

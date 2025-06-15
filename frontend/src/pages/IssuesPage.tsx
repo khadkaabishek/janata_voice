@@ -104,7 +104,7 @@ const IssuesPage: React.FC = () => {
         });
         break;
     }
-
+  
     setFilteredIssues(result);
   }, [filters, wardFilter, criticalFilter, myReportsFilter]);
 

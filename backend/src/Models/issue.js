@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const issueSchema = new mongoose.Schema({
     title: {
@@ -46,4 +46,4 @@ type:String
     },
 }, { timestamps: true });
 
-module.exports = mongoose.model('issue', issueSchema);
+module.exports = mongoose.model("Issue", issueSchema);
