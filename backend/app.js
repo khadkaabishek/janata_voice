@@ -13,6 +13,7 @@ const issueRoute = require("./src/Routes/issueRoute.js");
 const interactionRoute = require("./src/Routes/interactionRoute.js");
 const connectDB = require("./src/Utils/database");
 const kycRoutes = require("./src/Routes/kycRoutes");
+const discussionRoutes = require("./src/Routes/discussionRoutes.js"); // ✅ Fix here
 const { protect1, restrictTo } = require("./src/Middlewares/authMiddle.js"); // ✅ Fix here
 
 const app = express();
@@ -33,6 +34,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+//json parser
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
@@ -46,8 +48,10 @@ connectDB();
 app.use("/submitkyc", kycRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/issue", issueRoute);              // ✅ Protected
-app.use("/api/interaction", protect1, interactionRoute);  // ✅ Protected
+app.use("/api/issue", protect1, issueRoute);              // ✅ Protected
+app.use("/api/interaction", protect1, interactionRoute); 
+app.use("/api/discussion", protect1, discussionRoutes); // ✅ Protected
+
 
 // Health check
 app.get("/api/health", (req, res) => {

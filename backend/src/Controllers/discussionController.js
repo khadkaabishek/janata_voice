@@ -17,6 +17,7 @@ const getDiscussionsByType = async (req, res) => {
 
     res.json(discussions);
   } catch (err) {
+    console.error('Error fetching discussions:', err);
     res.status(500).json({ message: err.message });
   }
 };
@@ -25,17 +26,27 @@ const getDiscussionsByType = async (req, res) => {
 const createComment = async (req, res) => {
   const { content, type } = req.body;
 
-  if (!content || !type || !req.user._Id) {
+  if (!content || !type) {
     return res.status(400).json({ message: 'Missing fields' });
   }
 
+  // Check if user is authenticated
+  if (!req.user || !req.user._id) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+
+  const userId = req.user._id; // Fixed: was _Id, should be _id
+
   try {
-    const user = req.user._Id;
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    // Verify user exists
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     const newComment = new Discussion({
       content,
-      commentedBy: req.user._Id,
+      commentedBy: userId,
       type
     });
 
@@ -45,24 +56,37 @@ const createComment = async (req, res) => {
     const populatedComment = await Discussion.findById(newComment._id)
       .populate('commentedBy', 'name role avatar');
 
+    console.log('Created comment:', populatedComment); // Debug log
+
     res.status(201).json(populatedComment);
   } catch (err) {
+    console.error('Error creating comment:', err);
     res.status(500).json({ message: err.message });
   }
 };
 
 // Add a reply to a comment
- const addReply = async (req, res) => {
+const addReply = async (req, res) => {
   const { id } = req.params;
   const { content } = req.body;
 
-  if (!content ) {
-    return res.status(400).json({ message: 'Content and userId are required' });
+  if (!content) {
+    return res.status(400).json({ message: 'Content is required' });
   }
 
+  // Check if user is authenticated
+  if (!req.user || !req.user._id) {
+    return res.status(401).json({ message: 'Authentication required' });
+  }
+
+  const userId = req.user._id; // Fixed: was _Id, should be _id
+
   try {
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    // Verify user exists
+    const userExists = await User.findById(userId);
+    if (!userExists) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     const updated = await Discussion.findByIdAndUpdate(
       id,
@@ -70,22 +94,27 @@ const createComment = async (req, res) => {
         $push: {
           replies: {
             content,
-            repliedBy: req.user._userId
+            repliedBy: userId
           }
         }
       },
       { new: true }
-    ).populate('replies.repliedBy', 'name role avatar');
+    ).populate('commentedBy', 'name role avatar')
+     .populate('replies.repliedBy', 'name role avatar');
 
     if (!updated) {
       return res.status(404).json({ message: 'Discussion not found' });
     }
 
+    console.log('Added reply to discussion:', updated); // Debug log
+
     res.json(updated);
   } catch (err) {
+    console.error('Error adding reply:', err);
     res.status(500).json({ message: err.message });
   }
 };
+
 module.exports = {
   getDiscussionsByType,
   createComment,
