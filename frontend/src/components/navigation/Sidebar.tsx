@@ -36,6 +36,10 @@ const Sidebar: React.FC<SidebarProps> = ({ className, userData }) => {
     return location.pathname + location.search === path;
   };
 
+  // Safe access to user data with fallbacks
+  const userName = userData?.data?.user?.name || 'Loading...';
+  const userWardNo = userData?.data?.user?.wardNo || 6;
+
   const sidebarLinks = [
     {
       name: translations['issues.all'],
@@ -44,7 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className, userData }) => {
     },
     {
       name: translations['issues.ward'],
-      path: '/dashboard/issues?ward=5',
+      path: `/dashboard/issues?ward=${userWardNo}`, // Use dynamic ward number
       icon: <AlertTriangle size={20} />
     },
     {
@@ -120,10 +124,10 @@ const Sidebar: React.FC<SidebarProps> = ({ className, userData }) => {
           />
           <div>
             <div className="font-medium text-gray-800">
-              {userData ? userData.data.user.name : 'Loading...'}
+              {userName}
             </div>
             <div className="text-xs text-gray-500">
-              {translations['home.stats.wardNumber']} {userData?.data.user.wardNo || '6'} {translations['home.stats.residence']}
+              {translations['home.stats.wardNumber']} {userWardNo} {translations['home.stats.residence']}
             </div>
           </div>
         </div>
